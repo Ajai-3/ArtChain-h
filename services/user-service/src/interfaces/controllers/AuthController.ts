@@ -137,12 +137,13 @@ export const refreshToken = async (
 ): Promise<any> => {
   try {
     const refreshToken = req.cookies.refreshToken;
-
+console.log(req.cookies.refreshToken);
     if (!refreshToken) {
       return res.status(401).json({ message: "Refresh token is required" });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
+    console.log(payload)
      if (typeof payload !== "object" || payload === null) {
       return res.status(401).json({ message: "Invalid refresh token" });
     }
@@ -155,3 +156,37 @@ export const refreshToken = async (
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+//#==================================================================================================================
+//# LOGOUT USER
+//#==================================================================================================================
+//# POST /api/v1/users/logout
+//# Request headers: { authorization: Bearer accessToken }
+//# This controller logs out a user by deleting their access token from the cookies.
+//#==================================================================================================================
+export const logoutUser = async(req: Request, res:Response):Promise<any> => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    console.log(refreshToken)
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token is required" });
+    }
+
+    const payload = TokenService.verifyRefreshToken(refreshToken);
+    if (typeof payload!== "object" || payload === null) {
+      return res.status(401).json({ message: "Invalid refresh token" });
+    }
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
