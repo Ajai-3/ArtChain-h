@@ -20,9 +20,12 @@ export const registerUser = async (
   try {
     console.log(req.body);
     const result = await registerUserSchema.safeParse(req.body);
+
     if (!result.success) {
-      return res.status(400).json(result.error);
+      const message = result.error.issues[0]?.message || "Validation error";
+      return res.status(400).json({ message });
     }
+    
     const { name, username, email, password } = result.data;
 
     const user = await registerUserUseCase.execute(
