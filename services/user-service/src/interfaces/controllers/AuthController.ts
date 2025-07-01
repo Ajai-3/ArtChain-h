@@ -19,7 +19,6 @@ export const registerUser = async (
   res: Response
 ): Promise<any> => {
   try {
-    console.log(req.body);
     const result = await registerUserSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -36,6 +35,7 @@ export const registerUser = async (
       password
     );
 
+
     const payload = {
       email: user.email,
       role: user.role,
@@ -43,12 +43,12 @@ export const registerUser = async (
 
     const refreshToken = TokenService.generateRefreshToken(payload);
     const accessToken = TokenService.generateAccessToken(payload);
-    
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000, 
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(201).json({
@@ -64,3 +64,18 @@ export const registerUser = async (
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+//#==================================================================================================================
+//# LOGIN USER
+//#==================================================================================================================
+//# POST /api/users/login
+//# Request body: { (email: string or username: string), password: string }
+//# This controller logs in a user using their (email or username) and password.
+//#==================================================================================================================
+export const loginUser = async (req: Request, res: Response) => {
+  try {
+    
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
