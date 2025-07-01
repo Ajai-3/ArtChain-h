@@ -14,7 +14,10 @@ const registerUserUseCase = new RegisterUserUseCase(repo);
 //# Request body: { name: string, username: string, email: string, password: string }
 //# This controller registers a new user.
 //#==================================================================================================================
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     console.log(req.body);
     const result = await registerUserSchema.safeParse(req.body);
@@ -31,5 +34,11 @@ export const registerUser = async (req: Request, res: Response) => {
     );
 
     return res.status(201).json(user);
-  } catch (error) {}
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ message: error.message });
+    }
+
+    return res.status(500).json({ message: "Something went wrong" });
+  }
 };

@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { User } from "../../domine/entities/User";
 import { IUserRepository } from "../../domine/repositories/IUserRepositories";
 
 export class RegisterUserUseCase {
@@ -9,7 +10,7 @@ export class RegisterUserUseCase {
     username: string,
     email: string,
     password: string
-  ) {
+  ): Promise<User> {
     const existingUserByUsername = await this.userRepo.findOneByUsername(
       username
     );
