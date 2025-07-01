@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 
+import { registerUserSchema } from "../validators/user.validator";
 import { RegisterUserUseCase } from "../../application/user/RegisterUserUseCase";
 import { UserRepositoryImpl } from "../../infrastructure/repositories/UserRepositoryImpl";
 
@@ -14,10 +15,21 @@ const registerUserUseCase = new RegisterUserUseCase(repo);
 //# This controller registers a new user.
 //#==================================================================================================================
 export const registerUser = async (req: Request, res: Response) => {
-   try {
-      const { name, username, email, password } = req.body;
-    
-   } catch (error) {
-    
-   }
-}
+  try {
+    console.log(req.body);
+    const result = await registerUserSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json(result.error);
+    }
+    const { name, username, email, password } = result.data;
+
+    const user = await registerUserUseCase.execute(
+      name,
+      username,
+      email,
+      password
+    );
+
+    return res.status(201).json(user);
+  } catch (error) {}
+};
