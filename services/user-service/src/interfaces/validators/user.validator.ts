@@ -4,17 +4,29 @@ import { z } from "zod";
 //# REGISTER USER SCHEMA VALIDATION
 //#==================================================================================================================
 export const registerUserSchema = z.object({
-  name: z.string().min(3).max(20).regex(/^[A-Za-z ]+$/, "Only letters & spaces"),
-  username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/, "Use letters, numbers, _"),
-  email: z.string().email(),
+  name: z
+    .string()
+    .min(3, "Name too short")
+    .max(20, "Name too long")
+    .regex(/^[A-Za-z ]+$/, "Only letters and spaces allowed"),
+
+  username: z
+    .string()
+    .min(3, "Username too short")
+    .max(20, "Username too long")
+    .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, underscores allowed"),
+
+  email: z.string().email("Invalid email"),
+
   password: z
     .string()
-    .min(8)
-    .refine(val =>
-      /[A-Z]/.test(val) &&
-      /[a-z]/.test(val) &&
-      /[0-9]/.test(val) &&
-      /[^A-Za-z0-9]/.test(val),
-      "Must include A-Z, a-z, 0-9, symbol"
-    )
+    .min(8, "Password must be at least 8 characters")
+    .refine(
+      (val) =>
+        /[A-Z]/.test(val) &&
+        /[a-z]/.test(val) &&
+        /[0-9]/.test(val) &&
+        /[^A-Za-z0-9]/.test(val),
+      "Password must include A-Z, a-z, 0-9, and a symbol"
+    ),
 });
