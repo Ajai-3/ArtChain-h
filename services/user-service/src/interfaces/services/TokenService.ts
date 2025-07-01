@@ -1,17 +1,19 @@
 import jwt, { Secret } from "jsonwebtoken";
 import { config } from "../../config/env";
+import { error } from "console";
 
 export class TokenService {
   static generateAccessToken(payload: object): string {
      const { exp, iat, ...cleanPayload } = payload as any;
     return jwt.sign(cleanPayload , config.jwt.accessSecret as string, {
-      expiresIn: parseInt(config.jwt.accessExpire) ,
+      expiresIn: config.jwt.accessExpire ,
     });
   }
 
   static generateRefreshToken(payload: object): string {
+    console.log(config.jwt.refreshSecret);
     return jwt.sign(payload, config.jwt.refreshSecret as string, {
-      expiresIn: parseInt(config.jwt.refreshExpire),
+      expiresIn: config.jwt.refreshExpire,
     });
   }
 
