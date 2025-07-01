@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  username       String   @unique
+  email          String   @unique
+  phone          String
+  password       String
+  role           Role
+  plan           Plan
+  status         Status
+  isVerified     Boolean  @default(false)
+  profileImage   String?
+  bannerImage    String?
+  backroundImage String?
+  bio            String?
+  contry         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+enum Role {
+  user
+  artist
+  admin
+}
+
+enum Plan {
+  free
+  pro
+  pro_plus
+}
+
+enum Status {
+  active
+  banned
+  suspended
+  deleted
+}
