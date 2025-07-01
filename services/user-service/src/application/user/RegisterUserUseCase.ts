@@ -7,7 +7,6 @@ export class RegisterUserUseCase {
     name: string,
     username: string,
     email: string,
-    phone: number,
     password: string
   ) {
     const existingUserByUsername = await this.userRepo.findOneByUsername(
@@ -25,7 +24,7 @@ export class RegisterUserUseCase {
       name,
       username,
       email,
-      phone,
+      phone: 0,
       password,
       isVerified: false,
       profileImage: "",
