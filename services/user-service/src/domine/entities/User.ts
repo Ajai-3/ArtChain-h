@@ -1,6 +1,6 @@
 export class User {
   constructor(
-
+    public id: string | null,
     public name: string,
     public username: string,
     public email: string,
@@ -16,6 +16,6 @@ export class User {
     public plan: "free" | "pro" | "pro_plus",
     public status: "banned" | "suspended" | "active" | "deleted",
     public createdAt: Date,
-    public updatedAt: Date
+    public updatedAt: Date,
   ) {}
 }
