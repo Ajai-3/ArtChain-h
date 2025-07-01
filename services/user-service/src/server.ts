@@ -1,6 +1,6 @@
-import app from "./app.ts";
+import app from "./app";
 import http from "http";
-import { config } from "./config/env.ts";
+import { config } from "./config/env";
 
 const server = http.createServer(app);
 

@@ -4,10 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --import ./register.mjs src/server.ts"
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts"
   },
   "keywords": [],
-  "type": "module",
   "author": "",
   "license": "ISC",
   "description": "",
@@ -17,13 +16,13 @@
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "mongoose": "^8.16.1",
-    "nodemon": "^3.1.10",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.7",
+    "@types/node": "^24.0.8",
+    "nodemon": "^3.1.10",
     "prisma": "^6.10.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",

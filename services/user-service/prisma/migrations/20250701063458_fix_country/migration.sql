@@ -21,7 +21,7 @@ CREATE TABLE "User" (
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "profileImage" TEXT,
     "bannerImage" TEXT,
-    "backroundImage" TEXT,
+    "backgroundImage" TEXT,
     "bio" TEXT,
     "country" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
