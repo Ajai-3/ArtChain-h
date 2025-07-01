@@ -1,17 +1,43 @@
 import { User } from "../../domine/entities/User";
 import { IUserRepository } from "../../domine/repositories/IUserRepositories";
+import { prisma } from "../database/prisma";
 
 export class UserRepositoryImpl implements IUserRepository {
   async findOneByUsername(username: string): Promise<User | undefined> {
-    // Implement logic to find a user by their username
-    return undefined;
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+    return user || undefined;
   }
+
   async findOneByEmail(email: string): Promise<User | undefined> {
-    // Implement logic to find a user by their email
-    return undefined;
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    return user || undefined;
   }
+
   async create(user: User): Promise<User> {
-    // Implement logic to create a new user in the database
-    return user;
+    const createdUser = await prisma.user.create({
+      data: {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        phone: user.phone.toString(),
+        password: user.password,
+        role: user.role,
+        plan: user.plan,
+        status: user.status,
+        isVerified: user.isVerified,
+        profileImage: user.profileImage,
+        bannerImage: user.bannerImage,
+        backroundImage: user.backroundImage,
+        bio: user.bio,
+        country: user.country,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
+    return createdUser as User;
   }
 }

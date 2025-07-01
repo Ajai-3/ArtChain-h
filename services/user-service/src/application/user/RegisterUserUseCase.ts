@@ -28,7 +28,7 @@ export class RegisterUserUseCase {
       name,
       username,
       email,
-      phone: 0,
+      phone: "",
       password: hashedPassword,
       isVerified: false,
       profileImage: "",

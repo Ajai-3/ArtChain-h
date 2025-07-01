@@ -4,7 +4,7 @@ export class User {
     public name: string,
     public username: string,
     public email: string,
-    public phone: number,
+    public phone: string,
     public password: string,
     public isVerified: boolean,
     public profileImage: string,
