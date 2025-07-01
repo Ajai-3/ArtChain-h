@@ -30,3 +30,11 @@ export const registerUserSchema = z.object({
       "Password must include A-Z, a-z, 0-9, and a symbol"
     ),
 });
+
+//#==================================================================================================================
+//# LOGIN USER SCHEMA VALIDATION
+//#==================================================================================================================
+export const loginUserSchema = z.object({
+  emailOrUsername: z.string().min(3, "Email or username is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
