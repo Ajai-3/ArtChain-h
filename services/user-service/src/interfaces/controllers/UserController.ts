@@ -17,7 +17,7 @@ const registerUserUseCase = new RegisterUserUseCase(repo);
 export const registerUser = async (
   req: Request,
   res: Response
-): Promise<Response> => {
+):Promise<Response> => {
   try {
     console.log(req.body);
     const result = await registerUserSchema.safeParse(req.body);
