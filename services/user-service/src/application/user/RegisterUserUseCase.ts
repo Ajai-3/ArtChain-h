@@ -11,14 +11,19 @@ export class RegisterUserUseCase {
     email: string,
     password: string
   ): Promise<User> {
+    const normalizedEmail = email.toLowerCase();
+    const normalizedUsername = username.toLowerCase();
+
     const existingUserByUsername = await this.userRepo.findOneByUsername(
-      username
+      normalizedUsername
     );
     if (existingUserByUsername) {
       throw new Error("Username already exists");
     }
 
-    const existingUserByEmail = await this.userRepo.findOneByEmail(email);
+    const existingUserByEmail = await this.userRepo.findOneByEmail(
+      normalizedEmail
+    );
     if (existingUserByEmail) {
       throw new Error("Email already exists");
     }
@@ -27,8 +32,8 @@ export class RegisterUserUseCase {
 
     const user = await this.userRepo.create({
       name,
-      username,
-      email,
+      email: normalizedEmail,
+      username: normalizedUsername,
       phone: "",
       password: hashedPassword,
       isVerified: false,
