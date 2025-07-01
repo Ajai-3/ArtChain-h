@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { IUserRepository } from "../../domine/repositories/IUserRepositories";
 
 export class RegisterUserUseCase {
@@ -15,17 +16,20 @@ export class RegisterUserUseCase {
     if (existingUserByUsername) {
       throw new Error("Username already exists");
     }
+
     const existingUserByEmail = await this.userRepo.findOneByEmail(email);
     if (existingUserByEmail) {
       throw new Error("Email already exists");
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await this.userRepo.create({
       name,
       username,
       email,
       phone: 0,
-      password,
+      password: hashedPassword,
       isVerified: false,
       profileImage: "",
       bannerImage: "",
