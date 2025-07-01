@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { TokenService } from "../services/TokenService";
 import { registerUserSchema } from "../validators/user.validator";
 import { RegisterUserUseCase } from "../../application/user/RegisterUserUseCase";
 import { UserRepositoryImpl } from "../../infrastructure/repositories/UserRepositoryImpl";
@@ -25,7 +26,7 @@ export const registerUser = async (
       const message = result.error.issues[0]?.message || "Validation error";
       return res.status(400).json({ message });
     }
-    
+
     const { name, username, email, password } = result.data;
 
     const user = await registerUserUseCase.execute(
@@ -35,7 +36,26 @@ export const registerUser = async (
       password
     );
 
-    return res.status(201).json(user);
+    const payload = {
+      email: user.email,
+      role: user.role,
+    };
+
+    const refreshToken = TokenService.generateRefreshToken(payload);
+    const accessToken = TokenService.generateAccessToken(payload);
+    
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000, 
+    });
+
+    return res.status(201).json({
+      message: "User registered successfully",
+      user,
+      accessToken,
+    });
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message });
