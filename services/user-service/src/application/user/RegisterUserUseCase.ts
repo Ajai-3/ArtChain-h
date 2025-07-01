@@ -31,6 +31,7 @@ export class RegisterUserUseCase {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await this.userRepo.create({
+      id: null,
       name,
       email: normalizedEmail,
       username: normalizedUsername,
