@@ -9,7 +9,7 @@ export class User {
     public isVerified: boolean,
     public profileImage: string | null,
     public bannerImage: string | null,
-    public backroundImage: string | null,
+    public backgroundImage: string | null,
     public bio: string | null,
     public country: string | null,
     public role: "user" | "artist" | "admin",

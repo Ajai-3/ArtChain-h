@@ -31,7 +31,7 @@ export class UserRepositoryImpl implements IUserRepository {
         isVerified: user.isVerified,
         profileImage: user.profileImage,
         bannerImage: user.bannerImage,
-        backroundImage: user.backroundImage,
+        backgroundImage: user.backgroundImage,
         bio: user.bio,
         country: user.country,
         createdAt: user.createdAt,

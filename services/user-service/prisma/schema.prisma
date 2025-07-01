@@ -20,7 +20,7 @@ model User {
   isVerified     Boolean  @default(false)
   profileImage   String?
   bannerImage    String?
-  backroundImage String?
+  backgroundImage String?
   bio            String?
   country         String?
   createdAt      DateTime @default(now())

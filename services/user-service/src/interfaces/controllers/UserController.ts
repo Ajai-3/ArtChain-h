@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-
 import { registerUserSchema } from "../validators/user.validator";
 import { RegisterUserUseCase } from "../../application/user/RegisterUserUseCase";
 import { UserRepositoryImpl } from "../../infrastructure/repositories/UserRepositoryImpl";
@@ -17,7 +16,7 @@ const registerUserUseCase = new RegisterUserUseCase(repo);
 export const registerUser = async (
   req: Request,
   res: Response
-):Promise<Response> => {
+): Promise<Response> => {
   try {
     console.log(req.body);
     const result = await registerUserSchema.safeParse(req.body);

@@ -34,7 +34,7 @@ export class RegisterUserUseCase {
       isVerified: false,
       profileImage: "",
       bannerImage: "",
-      backroundImage: "",
+      backgroundImage: "",
       bio: "",
       country: "",
       role: "user",
