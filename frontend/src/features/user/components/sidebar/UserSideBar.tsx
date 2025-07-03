@@ -2,7 +2,7 @@ import React from 'react'
 
 const UserSideBar:React.FC = () => {
   return (
-    <div className='border-r-2 border-zinc-800'>UserSideBar</div>
+    <div className='border-r border-zinc-400 dark:border-zinc-800'>UserSideBar</div>
   )
 }
 
