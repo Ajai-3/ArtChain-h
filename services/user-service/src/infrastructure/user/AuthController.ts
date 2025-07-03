@@ -6,7 +6,7 @@ import {
 } from "../validators/user.validator";
 import { AuthenticationError } from "../../errors/AuthenticationError";
 import { RegisterUserUseCase } from "../../application/user/RegisterUserUseCase";
-import { UserRepositoryImpl } from "../../infrastructure/repositories/UserRepositoryImpl";
+import { UserRepositoryImpl } from "../../infrastructure/user/repositories/UserRepositoryImpl";
 import { LoginUserUseCase } from "../../application/user/LoginUserUseCase";
 import { clearScreenDown } from "readline";
 
@@ -137,22 +137,24 @@ export const refreshToken = async (
 ): Promise<any> => {
   try {
     const refreshToken = req.cookies.refreshToken;
-console.log(req.cookies.refreshToken);
+    console.log(req.cookies.refreshToken);
     if (!refreshToken) {
       return res.status(401).json({ message: "Refresh token is required" });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
-    console.log(payload)
-     if (typeof payload !== "object" || payload === null) {
+    console.log(payload);
+    if (typeof payload !== "object" || payload === null) {
       return res.status(401).json({ message: "Invalid refresh token" });
     }
 
     const accessToken = TokenService.generateAccessToken(payload);
 
-    return res.status(200).json({message: "Access token refreshed successfully", accessToken });
+    return res
+      .status(200)
+      .json({ message: "Access token refreshed successfully", accessToken });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -164,17 +166,17 @@ console.log(req.cookies.refreshToken);
 //# Request headers: { authorization: Bearer accessToken }
 //# This controller logs out a user by deleting their access token from the cookies.
 //#==================================================================================================================
-export const logoutUser = async(req: Request, res:Response):Promise<any> => {
+export const logoutUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken)
+    console.log(refreshToken);
 
     if (!refreshToken) {
       return res.status(401).json({ message: "Refresh token is required" });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
-    if (typeof payload!== "object" || payload === null) {
+    if (typeof payload !== "object" || payload === null) {
       return res.status(401).json({ message: "Invalid refresh token" });
     }
 
@@ -188,5 +190,4 @@ export const logoutUser = async(req: Request, res:Response):Promise<any> => {
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong" });
   }
-}
-
+};

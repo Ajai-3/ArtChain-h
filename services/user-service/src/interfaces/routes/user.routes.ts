@@ -1,6 +1,6 @@
 import express from "express";
 
-import { refreshToken, loginUser, logoutUser, registerUser } from "../controllers/AuthController";
+import { refreshToken, loginUser, logoutUser, registerUser } from "../controllers/user/AuthController";
 
 const router = express.Router();
 

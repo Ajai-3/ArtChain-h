@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { User } from "../../domine/entities/User";
+import { User } from "../../domine/user/entities/User";
 import { AuthenticationError } from "../../errors/AuthenticationError";
 import { IUserRepository } from "../../domine/repositories/IUserRepositories";
 
