@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { User } from "../../domine/user/entities/User";
 import { AuthenticationError } from "../../errors/AuthenticationError";
-import { IUserRepository } from "../../domine/repositories/IUserRepositories";
+import { IUserRepository } from "../../domine/user/repositories/IUserRepositories";
 
 export class LoginUserUseCase {
   constructor(private userRepo: IUserRepository) {}
