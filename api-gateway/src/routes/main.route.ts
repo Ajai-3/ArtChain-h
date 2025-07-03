@@ -10,7 +10,7 @@ router.use(
     target: config.services.main,
     changeOrigin: true,
     pathRewrite: {
-      "^/api/v1/users": "/api/v1/users"
+      "^/api/v1/users": "/users"
     }
   })
 );
@@ -21,7 +21,7 @@ router.use(
     target: config.services.main,
     changeOrigin: true,
     pathRewrite: {
-      "^/api/v1/admin": "/api/v1/admin"
+      "^/api/v1/admin": "/admin"
     }
   })
 );

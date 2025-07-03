@@ -1,5 +1,5 @@
-import { User } from "../../../domine/user/entities/User";
-import { IUserRepository } from "../../../domine/user/repositories/IUserRepositories";
+import { User } from "../../../domine/entities/User";
+import { IUserRepository } from "../../../domine/repositories/IUserRepositories";
 import { prisma } from "../../database/prisma";
 
 export class UserRepositoryImpl implements IUserRepository {
