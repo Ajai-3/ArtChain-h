@@ -1,8 +1,12 @@
 import React from 'react'
+import { Routes } from 'react-router-dom'
+import UserRoutes from './routes/UserRoutes'
 
-const App = () => {
+const App:React.FC = () => {
   return (
-    <div>App</div>
+    <Routes>
+      {UserRoutes}
+    </Routes>
   )
 }
 
