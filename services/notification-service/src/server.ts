@@ -1,9 +1,11 @@
 import app from './app';
 import http from 'http';
 
+const PORT = process.env.PORT
+
 const server = http.createServer(app);
 
 
-server.listen(3000, () => {
-  console.log(`Notification Service is running on port 3000`);
+server.listen(PORT, () => {
+  console.log(`Notification Service is running on port ${PORT}`);
 });
