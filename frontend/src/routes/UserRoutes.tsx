@@ -4,12 +4,13 @@ import Home from "../features/user/pages/Home";
 import Profile from "../features/user/pages/Profile";
 import Auth from "../features/user/components/auth/Auth";
 
-const UserRoutes = (
-  <Route path="/" element={<UserLayout />}>
+const UserRoutes = [
+  <Route path="/login" element={<Auth />} key="auth" />,
+
+  <Route path="/" element={<UserLayout />} key="user-layout">
     <Route index element={<Home />} />
     <Route path="profile" element={<Profile />} />
-    <Route path="login" element={<Auth />} />
-  </Route>
-);
+  </Route>,
+];
 
 export default UserRoutes;
