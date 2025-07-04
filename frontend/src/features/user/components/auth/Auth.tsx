@@ -17,6 +17,7 @@ const Auth: React.FC = () => {
     name: "",
     username: "",
     email: "",
+    identifier: "",
     password: "",
   });
 
@@ -40,12 +41,12 @@ const Auth: React.FC = () => {
 
   const handleForgot = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Forgot password email sent to:", form.email);
+    console.log("Forgot password email sent to:", form.identifier);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
-      <div className="w-full max-w-md bg-card p-6 rounded-xl shadow-xl min-h-[500px]">
+      <div className="w-[500px] max-w-md bg-card p-6 rounded-xl shadow-xl min-h-[500px]">
         {!forgotMode ? (
           <Tabs defaultValue="login" className="w-full h-full">
             <TabsList className="w-full grid grid-cols-2 mb-6">
@@ -57,10 +58,10 @@ const Auth: React.FC = () => {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <Input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={form.email}
+                  type="text"
+                  name="identifier"
+                  placeholder="Email or Username"
+                  value={form.identifier}
                   onChange={handleChange}
                   required
                 />
@@ -126,9 +127,9 @@ const Auth: React.FC = () => {
                 />
                 <Input
                   type="email"
-                  name="email"
+                  name="identifier"
                   placeholder="Email"
-                  value={form.email}
+                  value={form.identifier}
                   onChange={handleChange}
                   required
                 />
@@ -158,14 +159,17 @@ const Auth: React.FC = () => {
             onSubmit={handleForgot}
             className="space-y-4 w-full max-w-md mx-auto"
           >
-            <h2 className="text-xl font-semibold text-center">Forgot Password</h2>
+            <h2 className="text-xl font-semibold text-center">
+              Forgot Password
+            </h2>
             <p className="text-sm text-muted-foreground text-center">
-              Enter your registered email. We’ll send a reset link.
+              Enter your registered email or username. We’ll send you a password
+              reset link.
             </p>
             <Input
-              type="email"
+              type="text"
               name="email"
-              placeholder="Email"
+              placeholder="Email or Username"
               value={form.email}
               onChange={handleChange}
               required
