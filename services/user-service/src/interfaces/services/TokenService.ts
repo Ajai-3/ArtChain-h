@@ -11,7 +11,6 @@ export class TokenService {
   }
 
   static generateRefreshToken(payload: object): string {
-    console.log(config.jwt.refreshSecret);
     return jwt.sign(payload, config.jwt.refreshSecret as string, {
       expiresIn: config.jwt.refreshExpire,
     });
@@ -31,5 +30,11 @@ export class TokenService {
     } catch (err) {
       return null;
     }
+  }
+
+  static genarateEmailVerificationToken(payload: object): string {
+      return jwt.sign(payload, config.jwt.emailVerificationSecret as string, {
+        expiresIn: config.jwt.emailVerificationExpire,
+      })
   }
 }

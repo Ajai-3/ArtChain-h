@@ -1,3 +1,4 @@
+import { StartRegisterUseCase } from './../../../application/user/StartRegisterUseCase';
 import { Request, Response } from "express";
 import { TokenService } from "../../services/TokenService";
 import {
@@ -12,6 +13,7 @@ import { UserRepositoryImpl } from "../../../infrastructure/user/repositories/Us
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
+const startRegisterUseCase  = new StartRegisterUseCase(repo);
 const registerUserUseCase = new RegisterUserUseCase(repo);
 
 //#==================================================================================================================
@@ -30,6 +32,12 @@ export const startRegisterUser = async (req: Request, res: Response) => {
     }
 
     const { name, username, email } = result.data;
+
+    const payload = await startRegisterUseCase.execute(name, username, email)
+
+    const token = TokenService.genarateEmailVerificationToken(payload);
+
+    console.log(token)
 
     // const existingUser = await User.findOne({ where: { email } });
     // if (existingUser) return res.status(409).json({ message: "Email already in use" });
