@@ -121,8 +121,12 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
-select:-webkit-autofill {
-  transition: background-color 9999s ease-in-out 0s;
-  -webkit-text-fill-color: inherit !important;
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  transition: background-color 9999s ease-in-out 0s, color 9999s ease-in-out 0s;
+  -webkit-text-fill-color: var(--input-color) !important;
+  box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  caret-color: var(--input-color);
 }
+
 
