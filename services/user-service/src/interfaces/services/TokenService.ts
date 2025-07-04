@@ -1,12 +1,12 @@
 import jwt, { Secret } from "jsonwebtoken";
-import { config } from "../../config/env";
+import { config } from "../../infrastructure/config/env";
 import { error } from "console";
 
 export class TokenService {
   static generateAccessToken(payload: object): string {
-     const { exp, iat, ...cleanPayload } = payload as any;
-    return jwt.sign(cleanPayload , config.jwt.accessSecret as string, {
-      expiresIn: config.jwt.accessExpire ,
+    const { exp, iat, ...cleanPayload } = payload as any;
+    return jwt.sign(cleanPayload, config.jwt.accessSecret as string, {
+      expiresIn: config.jwt.accessExpire,
     });
   }
 
@@ -33,8 +33,8 @@ export class TokenService {
   }
 
   static genarateEmailVerificationToken(payload: object): string {
-      return jwt.sign(payload, config.jwt.emailVerificationSecret as string, {
-        expiresIn: config.jwt.emailVerificationExpire,
-      })
+    return jwt.sign(payload, config.jwt.emailVerificationSecret as string, {
+      expiresIn: config.jwt.emailVerificationExpire,
+    });
   }
 }
