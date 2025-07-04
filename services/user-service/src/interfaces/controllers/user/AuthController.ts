@@ -3,6 +3,7 @@ import { TokenService } from "../../services/TokenService";
 import {
   loginUserSchema,
   registerUserSchema,
+  startRegisterSchema,
 } from "../../validators/user.validator";
 import { AuthenticationError } from "../../../errors/AuthenticationError";
 import { LoginUserUseCase } from "../../../application/user/LoginUserUseCase";
@@ -14,7 +15,54 @@ const loginUserUseCase = new LoginUserUseCase(repo);
 const registerUserUseCase = new RegisterUserUseCase(repo);
 
 //#==================================================================================================================
-//# REGISTER USER
+//# REGISTER USER SEND EMAIL FOR VERIFICATION
+//#==================================================================================================================
+//# POST /api/v1/users/register
+//# Request body: { name: string, username: string, email: string }
+//# This controller registers create a link with token and send a verification email to the user.
+//#==================================================================================================================
+export const startRegisterUser = async (req: Request, res: Response) => {
+  try {
+    const result = startRegisterSchema.safeParse(req.body); 
+
+    if (!result.success) {
+      return res.status(400).json({ message: result.error.issues[0]?.message });
+    }
+
+    const { name, username, email } = result.data;
+
+    // const existingUser = await User.findOne({ where: { email } });
+    // if (existingUser) return res.status(409).json({ message: "Email already in use" });
+
+    // const token = TokenService.generateVerificationToken({ name, username, email });
+
+    // await MailService.sendVerificationEmail(email, token); 
+
+    return res.status(200).json({ message: "Verification email sent" });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#==================================================================================================================
+//# REGISTER USER 
 //#==================================================================================================================
 //# POST /api/v1/users/register
 //# Request body: { name: string, username: string, email: string, password: string }
