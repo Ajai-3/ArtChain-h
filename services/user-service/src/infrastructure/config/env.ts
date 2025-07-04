@@ -4,6 +4,7 @@ dotenv.config();
 
 export const config = {
   port: process.env.PORT,
+  rabbitmq_URL: process.env.RABBITMQ_URL || "",
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET || "",
     refreshSecret: process.env.JWT_REFRESH_SECRET || "",

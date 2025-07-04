@@ -1,4 +1,4 @@
-import { StartRegisterUseCase } from './../../../application/user/StartRegisterUseCase';
+import { StartRegisterUseCase } from "./../../../application/user/StartRegisterUseCase";
 import { Request, Response } from "express";
 import { TokenService } from "../../services/TokenService";
 import {
@@ -10,10 +10,11 @@ import { AuthenticationError } from "../../../errors/AuthenticationError";
 import { LoginUserUseCase } from "../../../application/user/LoginUserUseCase";
 import { RegisterUserUseCase } from "../../../application/user/RegisterUserUseCase";
 import { UserRepositoryImpl } from "../../../infrastructure/user/repositories/UserRepositoryImpl";
+import { publishToQueue } from "../../../infrastructure/utils/rabbit";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
-const startRegisterUseCase  = new StartRegisterUseCase(repo);
+const startRegisterUseCase = new StartRegisterUseCase(repo);
 const registerUserUseCase = new RegisterUserUseCase(repo);
 
 //#==================================================================================================================
@@ -23,9 +24,9 @@ const registerUserUseCase = new RegisterUserUseCase(repo);
 //# Request body: { name: string, username: string, email: string }
 //# This controller registers create a link with token and send a verification email to the user.
 //#==================================================================================================================
-export const startRegisterUser = async (req: Request, res: Response) => {
+export const startRegisterUser = async (req: Request, res: Response): Promise<any> => {
   try {
-    const result = startRegisterSchema.safeParse(req.body); 
+    const result = startRegisterSchema.safeParse(req.body);
 
     if (!result.success) {
       return res.status(400).json({ message: result.error.issues[0]?.message });
@@ -33,18 +34,19 @@ export const startRegisterUser = async (req: Request, res: Response) => {
 
     const { name, username, email } = result.data;
 
-    const payload = await startRegisterUseCase.execute(name, username, email)
+    const payload = await startRegisterUseCase.execute(name, username, email);
 
     const token = TokenService.genarateEmailVerificationToken(payload);
 
-    console.log(token)
-
-    // const existingUser = await User.findOne({ where: { email } });
-    // if (existingUser) return res.status(409).json({ message: "Email already in use" });
-
-    // const token = TokenService.generateVerificationToken({ name, username, email });
-
-    // await MailService.sendVerificationEmail(email, token); 
+    await publishToQueue("emails", {
+      type: "VERIFICATION",
+      email,
+      payload: {
+        name,
+        token,
+        link: `http://localhost:5173/verify?token=${token}`,
+      },
+    });
 
     return res.status(200).json({ message: "Verification email sent" });
   } catch (error) {
@@ -52,25 +54,8 @@ export const startRegisterUser = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //#==================================================================================================================
-//# REGISTER USER 
+//# REGISTER USER
 //#==================================================================================================================
 //# POST /api/v1/users/register
 //# Request body: { name: string, username: string, email: string, password: string }
@@ -126,6 +111,18 @@ export const registerUser = async (
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+
+// await messageBroker.publishMessage('emails', {
+//   type: 'PASSWORD_RESET',
+//   email: user.email,
+//   payload: {
+//     name: user.name,
+//     token: resetToken,
+//     link: `${process.env.APP_URL}/reset?token=${resetToken}`
+//   }
+// });
+
 
 //#==================================================================================================================
 //# LOGIN USER
