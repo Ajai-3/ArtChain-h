@@ -15,7 +15,7 @@ export class ForgotPasswordUseCase {
     }
 
     if (!user) {
-      throw new AuthenticationError("Invalid credentials");
+      throw new AuthenticationError("User not found. Please check your credentials.");
     }
 
     return user

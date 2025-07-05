@@ -132,16 +132,6 @@ export const registerUser = async (
   }
 };
 
-// await messageBroker.publishMessage('emails', {
-//   type: 'PASSWORD_RESET',
-//   email: user.email,
-//   payload: {
-//     name: user.name,
-//     token: resetToken,
-//     link: `${process.env.APP_URL}/reset?token=${resetToken}`
-//   }
-// });
-
 //#==================================================================================================================
 //# LOGIN USER
 //#==================================================================================================================
@@ -206,7 +196,8 @@ export const forgotPassword = async (
   res: Response
 ): Promise<any> => {
   try {
-    const identifier = req.body;
+    const identifier = req.body.identifier as string;
+    console.log(identifier);
 
     if (!identifier) {
       return res.status(400).json({ message: "Identifier is required" });
@@ -236,6 +227,9 @@ export const forgotPassword = async (
 
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ message: error.message });
+    }
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
