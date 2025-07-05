@@ -54,3 +54,19 @@ export const useSignupverificationMutation = () => {
     }
   });
 }
+
+export const useForgottPasswordMutation = () => {
+  return useMutation({
+    mutationFn: (credentials: {identifier: string}) => apiClient.post("/api/v1/users/forgot-password", credentials),
+    onSuccess: (data) => {
+      // Handle successful password reset request
+      console.log("Password reset request sent:", data);
+      // Typically you would:
+      // 1. Display a success message
+    },
+    onError: (error) => {
+      // Handle errors
+      console.error("Password reset failed:", error);
+    }
+  })
+}

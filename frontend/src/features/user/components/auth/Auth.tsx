@@ -9,7 +9,7 @@ import {
   type SignupFormInputs,
   type ForgotPasswordFormInputs
 } from "../../schemas/authShemas";
-import { useLoginMutation, useSignupMutation } from "../../../../api/users/mutations";
+import { useForgottPasswordMutation, useLoginMutation, useSignupMutation } from "../../../../api/users/mutations";
 import { Eye, EyeOff, Mail, Loader2 } from "lucide-react";
 import {
   Tabs,
@@ -70,6 +70,7 @@ const Auth: React.FC = () => {
   // Mutations
   const { mutate: loginMutation, isPending: isLoggingIn } = useLoginMutation();
   const { mutate: signupMutation, isPending: isSigningUp } = useSignupMutation();
+  const { mutate: forgotMutation } = useForgottPasswordMutation()
 
   const handleLogin = (data: LoginFormInputs) => {
     loginMutation(data);
@@ -80,6 +81,7 @@ const Auth: React.FC = () => {
   };
 
   const handleForgot = (data: ForgotPasswordFormInputs) => {
+    forgotMutation(data)
     setIsResetDisabled(true);
     console.log("Forgot password:", data.identifier);
     // Add your API call here if needed
