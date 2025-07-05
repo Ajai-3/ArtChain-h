@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "../../schemas/authShemas";
-import type { LoginFormInputs } from "../../schemas/authShemas";
+import { 
+  LoginSchema, 
+  SignupSchema, 
+  ForgotPasswordSchema,
+  type LoginFormInputs,
+  type SignupFormInputs,
+  type ForgotPasswordFormInputs
+} from "../../schemas/authShemas";
 import { useLoginMutation } from "../../../../api/users/mutations";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import {
@@ -18,35 +24,47 @@ const Auth: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "",
-    username: "",
-    email: "",
-    identifier: "",
-    password: "",
+  // Login form
+  const { 
+    register: loginRegister,
+    handleSubmit: handleLoginSubmit,
+    formState: { errors: loginErrors },
+  } = useForm<LoginFormInputs>({
+    resolver: zodResolver(LoginSchema),
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Signup form
+  const { 
+    register: signupRegister,
+    handleSubmit: handleSignupSubmit,
+    formState: { errors: signupErrors },
+  } = useForm<SignupFormInputs>({
+    resolver: zodResolver(SignupSchema),
+  });
+
+  // Forgot password form
+  const { 
+    register: forgotRegister,
+    handleSubmit: handleForgotSubmit,
+    formState: { errors: forgotErrors },
+  } = useForm<ForgotPasswordFormInputs>({
+    resolver: zodResolver(ForgotPasswordSchema),
+  });
+
+  const { mutate: loginMutation } = useLoginMutation();
+
+  const handleLogin = (data: LoginFormInputs) => {
+    loginMutation(data);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Logging in:", form.email, form.password);
+  const handleSignup = (data: SignupFormInputs) => {
+    console.log("Signup requested for:", data);
+    // Add your signup mutation here
   };
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Signup requested for:", {
-      name: form.name,
-      username: form.username,
-      email: form.email,
-    });
-  };
-
-  const handleForgot = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Forgot password email sent to:", form.identifier);
+  const handleForgot = (data: ForgotPasswordFormInputs) => {
+    console.log("Forgot password email sent to:", data.identifier);
+    // Add your forgot password mutation here
   };
 
   return (
@@ -61,32 +79,39 @@ const Auth: React.FC = () => {
 
             {/* LOGIN TAB */}
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <Input
-                  type="text"
-                  name="identifier"
-                  placeholder="Email or Username"
-                  value={form.identifier}
-                  onChange={handleChange}
-                  required
-                />
-
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={handleChange}
-                    className="pr-10"
-                    required
+              <form onSubmit={handleLoginSubmit(handleLogin)} className="space-y-4">
+                <div>
+                  <Input 
+                    placeholder="Email or Username" 
+                    {...loginRegister("identifier")}
                   />
-                  <div
-                    className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {loginErrors.identifier && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {loginErrors.identifier.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      className="pr-10"
+                      {...loginRegister("password")}
+                    />
+                    <div
+                      className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </div>
                   </div>
+                  {loginErrors.password && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {loginErrors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 <p
@@ -113,31 +138,33 @@ const Auth: React.FC = () => {
 
             {/* SIGNUP TAB */}
             <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <Input
-                  type="text"
-                  name="name"
-                  placeholder="Full Name"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                />
-                <Input
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  value={form.username}
-                  onChange={handleChange}
-                  required
-                />
-                <Input
-                  type="email"
-                  name="identifier"
-                  placeholder="Email"
-                  value={form.identifier}
-                  onChange={handleChange}
-                  required
-                />
+              <form onSubmit={handleSignupSubmit(handleSignup)} className="space-y-4">
+                <div>
+                  <Input placeholder="Full Name" {...signupRegister("name")} />
+                  {signupErrors.name && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {signupErrors.name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Input placeholder="Username" {...signupRegister("username")} />
+                  {signupErrors.username && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {signupErrors.username.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Input placeholder="Email" {...signupRegister("email")} />
+                  {signupErrors.email && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {signupErrors.email.message}
+                    </p>
+                  )}
+                </div>
 
                 <p className="text-sm text-muted-foreground">
                   A verification link will be sent to your email. Please click
@@ -161,24 +188,26 @@ const Auth: React.FC = () => {
           </Tabs>
         ) : (
           <form
-            onSubmit={handleForgot}
+            onSubmit={handleForgotSubmit(handleForgot)}
             className="space-y-4 w-full max-w-md mx-auto"
           >
             <h2 className="text-xl font-semibold text-center">
               Forgot Password
             </h2>
             <p className="text-sm text-muted-foreground text-center">
-              Enter your registered email or username. We’ll send you a password
+              Enter your registered email or username. We'll send you a password
               reset link.
             </p>
-            <Input
-              type="text"
-              name="email"
-              placeholder="Email or Username"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
+
+            <div>
+              <Input placeholder="Email or Username" {...forgotRegister("identifier")} />
+              {forgotErrors.identifier && (
+                <p className="text-sm text-red-500 mt-1">
+                  {forgotErrors.identifier.message}
+                </p>
+              )}
+            </div>
+
             <Button type="submit" className="w-full">
               Send Reset Link
             </Button>
