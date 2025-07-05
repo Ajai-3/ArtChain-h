@@ -1,17 +1,18 @@
 import cors from "cors";
 import express from "express";
 import cookeParser from "cookie-parser";
-import mainRoute from "../src/routes/main.route";
+import mainRoute from "./gateway/main.route";
 import { rateLimiter } from "./middleware/RateLimiter";
+import { config } from "./config/env";
 
 const app = express();
-
 
 app.use(cookeParser());
 app.use(rateLimiter);
 
-app.use(cors({
-    origin: "http://localhost:5173",
+app.use(
+  cors({
+    origin: config.frontend_url,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
@@ -23,6 +24,6 @@ app.use(cors({
   })
 );
 
-app.use("/api/v1", mainRoute);
+app.use("/", mainRoute);
 
 export default app;
