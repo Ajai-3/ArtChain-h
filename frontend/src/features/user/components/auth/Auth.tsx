@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { 
@@ -10,7 +10,7 @@ import {
   type ForgotPasswordFormInputs
 } from "../../schemas/authShemas";
 import { useLoginMutation, useSignupMutation } from "../../../../api/users/mutations";
-import { Eye, EyeOff, Mail } from "lucide-react";
+import { Eye, EyeOff, Mail, Loader2 } from "lucide-react";
 import {
   Tabs,
   TabsContent,
@@ -19,13 +19,30 @@ import {
 } from "../../../../components/ui/tabs";
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
-import Logo from "../navbar/Logo";
 
 const Auth: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
+  const [isResetDisabled, setIsResetDisabled] = useState(false);
+  const [countdown, setCountdown] = useState(60);
 
-  // Login form
+  // Countdown timer for reset password button
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (isResetDisabled && countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown(prev => prev - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      setIsResetDisabled(false);
+      setCountdown(60);
+    }
+
+    return () => clearInterval(timer);
+  }, [isResetDisabled, countdown]);
+
+  // Form setups
   const { 
     register: loginRegister,
     handleSubmit: handleLoginSubmit,
@@ -34,7 +51,6 @@ const Auth: React.FC = () => {
     resolver: zodResolver(LoginSchema),
   });
 
-  // Signup form
   const { 
     register: signupRegister,
     handleSubmit: handleSignupSubmit,
@@ -43,7 +59,6 @@ const Auth: React.FC = () => {
     resolver: zodResolver(SignupSchema),
   });
 
-  // Forgot password form
   const { 
     register: forgotRegister,
     handleSubmit: handleForgotSubmit,
@@ -52,20 +67,22 @@ const Auth: React.FC = () => {
     resolver: zodResolver(ForgotPasswordSchema),
   });
 
-  const { mutate: loginMutation } = useLoginMutation();
+  // Mutations
+  const { mutate: loginMutation, isPending: isLoggingIn } = useLoginMutation();
+  const { mutate: signupMutation, isPending: isSigningUp } = useSignupMutation();
 
   const handleLogin = (data: LoginFormInputs) => {
     loginMutation(data);
   };
 
-  const { mutate: signupMutation } = useSignupMutation();
   const handleSignup = (data: SignupFormInputs) => {
     signupMutation(data);
-    console.log("Signup requested for:", data);
   };
 
   const handleForgot = (data: ForgotPasswordFormInputs) => {
-    console.log("Forgot password email sent to:", data.identifier);
+    setIsResetDisabled(true);
+    console.log("Forgot password:", data.identifier);
+    // Add your API call here if needed
   };
 
   return (
@@ -75,12 +92,10 @@ const Auth: React.FC = () => {
           <>
             <div className="mb-6 text-center">
               <h2 className="text-2xl font-bold mb-2">
-                {forgotMode ? "Reset Password" : "Welcome to Art Chain"}
+                Welcome to Art Chain
               </h2>
               <p className="text-muted-foreground">
-                {forgotMode 
-                  ? "Enter your email to receive a reset link" 
-                  : "Secure access to your digital art collection"}
+                Secure access to your digital art collection
               </p>
             </div>
             
@@ -95,7 +110,7 @@ const Auth: React.FC = () => {
                 <form onSubmit={handleLoginSubmit(handleLogin)} className="space-y-4" noValidate>
                   <div>
                     <Input 
-                    variant="green-focus"
+                      variant="green-focus"
                       placeholder="Email or Username" 
                       {...loginRegister("identifier")}
                     />
@@ -109,7 +124,7 @@ const Auth: React.FC = () => {
                   <div>
                     <div className="relative">
                       <Input
-                      variant="green-focus"
+                        variant="green-focus"
                         type={showPassword ? "text" : "password"}
                         placeholder="Password"
                         className="pr-10"
@@ -136,8 +151,18 @@ const Auth: React.FC = () => {
                     Forgot Password?
                   </p>
 
-                  <Button variant="main" type="submit" className="w-full">
-                    Log In
+                  <Button 
+                    variant="main" 
+                    type="submit" 
+                    className="w-full"
+                    disabled={isLoggingIn}
+                  >
+                    {isLoggingIn ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Logging in...
+                      </>
+                    ) : "Log In"}
                   </Button>
 
                   <Button
@@ -186,8 +211,18 @@ const Auth: React.FC = () => {
                     the link to complete account setup.
                   </p>
 
-                  <Button variant="main" type="submit" className="w-full">
-                    Send Verification Link
+                  <Button 
+                    variant="main" 
+                    type="submit" 
+                    className="w-full"
+                    disabled={isSigningUp}
+                  >
+                    {isSigningUp ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending link...
+                      </>
+                    ) : "Send Verification Link"}
                   </Button>
 
                   <Button
@@ -224,8 +259,13 @@ const Auth: React.FC = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full">
-                Send Reset Link
+              <Button 
+              variant="main"
+                type="submit" 
+                className="w-full"
+                disabled={isResetDisabled}
+              >
+                {isResetDisabled ? `Resend in ${countdown}s` : "Send Reset Link"}
               </Button>
               <p
                 className="text-sm text-center cursor-pointer text-blue-500 hover:underline"
