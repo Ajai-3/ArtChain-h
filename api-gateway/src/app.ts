@@ -10,6 +10,12 @@ const app = express();
 app.use(cookeParser());
 app.use(rateLimiter);
 
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.path}`);
+  next();
+});
+
+
 app.use(
   cors({
     origin: config.frontend_url,
