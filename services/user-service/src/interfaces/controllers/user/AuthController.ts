@@ -140,9 +140,9 @@ export const loginUser = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json(message);
     }
 
-    const { emailOrUsername, password } = result.data;
+    const { identifier, password } = result.data;
 
-    const user = await loginUserUseCase.execute(emailOrUsername, password);
+    const user = await loginUserUseCase.execute(identifier, password);
 
     const payload = {
       id: user.id,

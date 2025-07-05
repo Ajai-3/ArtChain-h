@@ -5,13 +5,13 @@ import { IUserRepository } from "../../domine/repositories/IUserRepositories";
 
 export class LoginUserUseCase {
   constructor(private userRepo: IUserRepository) {}
-  async execute(usernameOrEmail: string, password: string): Promise<User> {
-    const normalizedInput = usernameOrEmail.toLocaleLowerCase();
+  async execute(identifier: string, password: string): Promise<User> {
+    const normalizedInput = identifier.toLocaleLowerCase();
 
     let user = await this.userRepo.findOneByUsername(normalizedInput);
 
     if (!user) {
-      user = await this.userRepo.findOneByEmail(usernameOrEmail);
+      user = await this.userRepo.findOneByEmail(identifier);
     }
 
     if (!user) {
