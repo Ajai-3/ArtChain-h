@@ -6,7 +6,7 @@ import apiClient from "../axios";
 export const useUserProfile = () => {
     useQuery({
         queryKey: ['userProfile'],
-        queryFn: () => apiClient.get("api/v1/user/profile"),
+        queryFn: () => apiClient.get("api/v1/users/profile"),
         retry: 2,
         refetchInterval: false,
     })
