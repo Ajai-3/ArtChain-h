@@ -37,4 +37,12 @@ export class TokenService {
       expiresIn: config.jwt.emailVerificationExpire,
     });
   }
+
+  static verifyEmailVerificationToken(token: string) {
+    try {
+      return jwt.verify(token, config.jwt.emailVerificationSecret as string);
+    } catch (err) {
+      return null;
+    }
+  }
 }
