@@ -1,6 +1,12 @@
 import jwt, { Secret } from "jsonwebtoken";
 import { config } from "../../infrastructure/config/env";
-import { error } from "console";
+interface DecodedToken {
+  name: string;
+  username: string;
+  email: string;
+  iat: number;
+  exp: number;
+}
 
 export class TokenService {
   static generateAccessToken(payload: object): string {
@@ -40,7 +46,7 @@ export class TokenService {
 
   static verifyEmailVerificationToken(token: string) {
     try {
-      return jwt.verify(token, config.jwt.emailVerificationSecret as string);
+      return jwt.verify(token, config.jwt.emailVerificationSecret as string) as DecodedToken;
     } catch (err) {
       return null;
     }

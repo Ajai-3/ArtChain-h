@@ -24,9 +24,14 @@ const registerUserUseCase = new RegisterUserUseCase(repo);
 //# Request body: { name: string, username: string, email: string }
 //# This controller registers create a link with token and send a verification email to the user.
 //#==================================================================================================================
-export const startRegisterUser = async (req: Request, res: Response): Promise<any> => {
+export const startRegisterUser = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const result = startRegisterSchema.safeParse(req.body);
+
+    console.log(req.body);
 
     if (!result.success) {
       return res.status(400).json({ message: result.error.issues[0]?.message });
@@ -66,14 +71,28 @@ export const registerUser = async (
   res: Response
 ): Promise<any> => {
   try {
-    const result = registerUserSchema.safeParse(req.body);
+    const { token, password } = req.body;
+
+    const decoded = TokenService.verifyEmailVerificationToken(token);
+    if (!decoded) {
+      return res
+        .status(401)
+        .json({ error: "Invalid or expired verification token" });
+    }
+
+    const result = registerUserSchema.safeParse({
+      name: decoded.name,
+      username: decoded.username,
+      email: decoded.email,
+      password,
+    });
 
     if (!result.success) {
       const message = result.error.issues[0]?.message || "Validation error";
       return res.status(400).json({ message });
     }
 
-    const { name, username, email, password } = result.data;
+    const { name, username, email } = result.data;
 
     const user = await registerUserUseCase.execute(
       name,
@@ -112,7 +131,6 @@ export const registerUser = async (
   }
 };
 
-
 // await messageBroker.publishMessage('emails', {
 //   type: 'PASSWORD_RESET',
 //   email: user.email,
@@ -122,7 +140,6 @@ export const registerUser = async (
 //     link: `${process.env.APP_URL}/reset?token=${resetToken}`
 //   }
 // });
-
 
 //#==================================================================================================================
 //# LOGIN USER
