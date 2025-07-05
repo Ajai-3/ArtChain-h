@@ -22,7 +22,8 @@ apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
     if (error.response?.status === 401) {
-      window.location.href = "/login";
+      // window.location.href = "/login";
+      console.log("Unauthorized user.")
     }
     return Promise.reject(error.response?.data || error);
   }
