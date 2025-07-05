@@ -6,7 +6,7 @@ import fs from 'fs';
 const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
 
 interface EmailMessage {
-  type: 'VERIFICATION' | 'PASSWORD_RESET' | string;
+  type: 'VERIFICATION' | 'PASSWORD_RESET' | 'PASSWORD_CHAGE' | string;
   email: string;
   payload: Record<string, string>;
 }
