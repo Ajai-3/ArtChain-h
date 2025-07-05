@@ -11,11 +11,14 @@ import { LoginUserUseCase } from "../../../application/user/LoginUserUseCase";
 import { RegisterUserUseCase } from "../../../application/user/RegisterUserUseCase";
 import { UserRepositoryImpl } from "../../../infrastructure/user/repositories/UserRepositoryImpl";
 import { publishToQueue } from "../../../infrastructure/utils/rabbit";
+import { ForgotPasswordUseCase } from "../../../application/user/ForgotPasswordUseCase";
+import { config } from "../../../infrastructure/config/env";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
-const startRegisterUseCase = new StartRegisterUseCase(repo);
 const registerUserUseCase = new RegisterUserUseCase(repo);
+const startRegisterUseCase = new StartRegisterUseCase(repo);
+const forgotPasswordUseCase = new ForgotPasswordUseCase(repo);
 
 //#==================================================================================================================
 //# REGISTER USER SEND EMAIL FOR VERIFICATION
@@ -47,7 +50,7 @@ export const startRegisterUser = async (
       payload: {
         name,
         token,
-        link: `http://localhost:5173/verify?token=${token}`,
+        link: `${config.frontend_URL}/verify?token=${token}`,
       },
     });
 
@@ -187,6 +190,52 @@ export const loginUser = async (req: Request, res: Response): Promise<any> => {
 
     console.log(error);
 
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+//#==================================================================================================================
+//# FORGET PASSWORD
+//#==================================================================================================================
+//# POST /api/v1/users/forgot-password
+//# Request body: { email: string }
+//# This controller sends a password reset email to the user's registered email address.
+//#==================================================================================================================
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const identifier = req.body;
+
+    if (!identifier) {
+      return res.status(400).json({ message: "Identifier is required" });
+    }
+
+    const user = await forgotPasswordUseCase.execute(identifier);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const token = TokenService.genarateEmailVerificationToken({
+      name: user.name,
+      username: user.username,
+      email: user.email,
+    });
+
+    await publishToQueue("emails", {
+      type: "PASSWORD_RESET",
+      email: user.email,
+      payload: {
+        name: user.name,
+        token,
+        link: `${config.frontend_URL}/reset-password?token=${token}`,
+      },
+    });
+
+    return res.status(200).json({ message: "Password reset email sent" });
+  } catch (error) {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
