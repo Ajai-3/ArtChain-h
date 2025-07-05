@@ -95,6 +95,7 @@ const Auth: React.FC = () => {
                 <form onSubmit={handleLoginSubmit(handleLogin)} className="space-y-4" noValidate>
                   <div>
                     <Input 
+                    variant="green-focus"
                       placeholder="Email or Username" 
                       {...loginRegister("identifier")}
                     />
@@ -108,6 +109,7 @@ const Auth: React.FC = () => {
                   <div>
                     <div className="relative">
                       <Input
+                      variant="green-focus"
                         type={showPassword ? "text" : "password"}
                         placeholder="Password"
                         className="pr-10"
@@ -134,7 +136,7 @@ const Auth: React.FC = () => {
                     Forgot Password?
                   </p>
 
-                  <Button type="submit" className="w-full">
+                  <Button variant="main" type="submit" className="w-full">
                     Log In
                   </Button>
 
@@ -153,7 +155,7 @@ const Auth: React.FC = () => {
               <TabsContent value="signup">
                 <form onSubmit={handleSignupSubmit(handleSignup)} className="space-y-4" noValidate>
                   <div>
-                    <Input placeholder="Full Name" {...signupRegister("name")} />
+                    <Input variant="green-focus" placeholder="Full Name" {...signupRegister("name")} />
                     {signupErrors.name && (
                       <p className="text-sm text-red-500 mt-1">
                         {signupErrors.name.message}
@@ -162,7 +164,7 @@ const Auth: React.FC = () => {
                   </div>
 
                   <div>
-                    <Input placeholder="Username" {...signupRegister("username")} />
+                    <Input variant="green-focus" placeholder="Username" {...signupRegister("username")} />
                     {signupErrors.username && (
                       <p className="text-sm text-red-500 mt-1">
                         {signupErrors.username.message}
@@ -171,7 +173,7 @@ const Auth: React.FC = () => {
                   </div>
 
                   <div>
-                    <Input placeholder="Email" {...signupRegister("email")} />
+                    <Input variant="green-focus" placeholder="Email" {...signupRegister("email")} />
                     {signupErrors.email && (
                       <p className="text-sm text-red-500 mt-1">
                         {signupErrors.email.message}
@@ -184,7 +186,7 @@ const Auth: React.FC = () => {
                     the link to complete account setup.
                   </p>
 
-                  <Button type="submit" className="w-full">
+                  <Button variant="main" type="submit" className="w-full">
                     Send Verification Link
                   </Button>
 
@@ -214,7 +216,7 @@ const Auth: React.FC = () => {
               noValidate
             >
               <div>
-                <Input placeholder="Email or Username" {...forgotRegister("identifier")} />
+                <Input variant="green-focus" placeholder="Email or Username" {...forgotRegister("identifier")} />
                 {forgotErrors.identifier && (
                   <p className="text-sm text-red-500 mt-1">
                     {forgotErrors.identifier.message}
