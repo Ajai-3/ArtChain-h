@@ -38,3 +38,19 @@ export const useSignupMutation = () => {
     }
   });
 };
+
+export const useSignupverificationMutation = () => {
+  return useMutation({
+    mutationFn: ( credentials: {token: string, password: string }) => apiClient.post("/api/v1/users/register", credentials),
+    onSuccess: (data) => {
+      // Handle successful verification
+      console.log("Email verified:", data);
+      // Typically you would:
+      // 1. Redirect the user to the login page
+    },
+    onError: (error) => {
+      // Handle errors
+      console.error("Verification failed:", error);
+    }
+  });
+}
