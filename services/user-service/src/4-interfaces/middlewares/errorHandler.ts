@@ -1,6 +1,7 @@
-import { HttpStatus } from '../../constants/httpStatus';
 import { Request, Response, NextFunction } from 'express';
 import { AppError, InternalServerError } from '../../errors/index';
+import { ERROR_MESSAGES } from '../../constants/errorMessages';
+import { config } from '../../3-infrastructure/config/env';
 
 export const errorHandler = (
   err: unknown,
@@ -8,50 +9,26 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  let error: AppError;
+  // Normalize error
+  const error = err instanceof AppError 
+    ? err 
+    : new InternalServerError(ERROR_MESSAGES.SERVER_ERROR);
 
-  if (!(err instanceof AppError)) {
-    if (err instanceof SyntaxError && 'body' in err) {
-      error = new BadRequestError('Invalid JSON payload');
-    } else if (err instanceof Error) {
-      error = new InternalServerError(err.message);
-    } else {
-      error = new InternalServerError('An unknown error occurred');
-    }
-  } else {
-    error = err;
-  }
-
-  if (!error.isOperational || error.statusCode >= 500) {
-    logger.error('ERROR:', {
-      error: error.message,
-      stack: error.stack,
-      request: {
-        method: req.method,
-        url: req.originalUrl,
-        body: req.body,
-        params: req.params,
-        query: req.query,
-        headers: req.headers
-      }
-    });
-  } else {
-    logger.warn('Operational Error:', error.message);
-  }
-
-  const response: Record<string, unknown> = {
-    success: false,
-    error: error.message,
-    code: error.statusCode,
-    name: error.name
+  // Prepare response
+  const response = {
+    status: 'error',
+    message: error.message,
+    ...(!config.isProduction && { stack: error.stack })
   };
 
-  if (error.details) {
-    response.details = error.details;
-  }
-  if (process.env.NODE_ENV === 'development') {
-    response.stack = error.stack;
-  }
+  // Log error
+  console.error(`[${error.name}]`, {
+    message: error.message,
+    path: req.path,
+    status: error.statusCode,
+    ...(!config.isProduction && { stack: error.stack })
+  });
 
+  // Send response
   res.status(error.statusCode).json(response);
 };
