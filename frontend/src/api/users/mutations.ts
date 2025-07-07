@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 // Mutation for logging in a user
 export const useLoginMutation = () => {
   return useMutation({
-    mutationFn: (credentials: { identifier: string; password: string }) => 
+    mutationFn: (credentials: { identifier: string; password: string }) =>
       apiClient.post("/api/v1/users/login", credentials),
     onSuccess: (data) => {
       // Handle successful login
@@ -13,18 +13,28 @@ export const useLoginMutation = () => {
       // 1. Store the auth token
       // 2. Redirect the user
     },
-    onError: (error) => {
-      // Handle errors
-      console.error("Login failed:", error);
-    }
+    onError: (error: any) => {
+      // Get the most specific error message available
+      const errorMessage =
+        error.error?.message || error.message || "Login failed";
+
+      console.error("Login failed:", {
+        status: error.status,
+        message: errorMessage,
+        fullError: error,
+      });
+    },
   });
 };
 
 // Mutation for signing up a new user
 export const useSignupMutation = () => {
   return useMutation({
-    mutationFn: (credentials: { name: string; username: string, email: string; }) =>
-      apiClient.post("/api/v1/users/start-register", credentials),
+    mutationFn: (credentials: {
+      name: string;
+      username: string;
+      email: string;
+    }) => apiClient.post("/api/v1/users/start-register", credentials),
     onSuccess: (data) => {
       // Handle successful signup
       console.log("Verification email sended:", data);
@@ -35,13 +45,14 @@ export const useSignupMutation = () => {
     onError: (error) => {
       // Handle errors
       console.error("Signup failed:", error);
-    }
+    },
   });
 };
 
 export const useSignupverificationMutation = () => {
   return useMutation({
-    mutationFn: ( credentials: {token: string, password: string }) => apiClient.post("/api/v1/users/register", credentials),
+    mutationFn: (credentials: { token: string; password: string }) =>
+      apiClient.post("/api/v1/users/register", credentials),
     onSuccess: (data) => {
       // Handle successful verification
       console.log("Email verified:", data);
@@ -51,13 +62,14 @@ export const useSignupverificationMutation = () => {
     onError: (error) => {
       // Handle errors
       console.error("Verification failed:", error);
-    }
+    },
   });
-}
+};
 
 export const useForgottPasswordMutation = () => {
   return useMutation({
-    mutationFn: (credentials: {identifier: string}) => apiClient.post("/api/v1/users/forgot-password", credentials),
+    mutationFn: (credentials: { identifier: string }) =>
+      apiClient.post("/api/v1/users/forgot-password", credentials),
     onSuccess: (data) => {
       // Handle successful password reset request
       console.log("Password reset request sent:", data);
@@ -67,6 +79,6 @@ export const useForgottPasswordMutation = () => {
     onError: (error) => {
       // Handle errors
       console.error("Password reset failed:", error);
-    }
-  })
-}
+    },
+  });
+};

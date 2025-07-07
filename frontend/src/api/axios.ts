@@ -21,11 +21,25 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    if (error.response?.status === 401) {
-      // window.location.href = "/login";
-      console.log("Unauthorized user.")
+    if (!error.response) {
+      return Promise.reject({
+        message: 'Network Error',
+        status: 503
+      });
     }
-    return Promise.reject(error.response?.data || error);
+
+    // Debug the raw response
+    console.log('Raw error response:', {
+      status: error.response.status,
+      data: error.response.data
+    });
+
+    // Return the error in a consistent structure
+    return Promise.reject({
+      status: error.response.status,
+      ...error.response.data, // Contains your error object
+      message: error.response.data?.error?.message || 'Request failed'
+    });
   }
 );
 
