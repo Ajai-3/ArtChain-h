@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 
 import userRouter from "../src/4-interfaces/routes/user.routes";
 import adminRouter from "../src/4-interfaces/routes/admin.routes";
+import { errorHandler } from "./4-interfaces/middlewares/errorHandler";
 
 
 const app = express();
@@ -20,6 +21,8 @@ app.use((req, res, next) => {
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admin", adminRouter)
+
+app.use(errorHandler)
 
 
 export default app;
