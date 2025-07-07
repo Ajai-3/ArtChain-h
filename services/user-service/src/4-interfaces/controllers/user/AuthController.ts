@@ -15,6 +15,8 @@ import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswor
 import { UserRepositoryImpl } from "../../../3-infrastructure/user/repositories/UserRepositoryImpl";
 import { ValidationError } from "../../../errors";
 import { ERROR_MESSAGES } from "../../../constants/errorMessages";
+import { HttpStatus } from "../../../constants/httpStatus";
+import { AUTH_MESSAGES } from "../../../constants/authMessages";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
@@ -39,7 +41,9 @@ export const startRegisterUser = async (
     const result = startRegisterSchema.safeParse(req.body);
 
     if (!result.success) {
-      return res.status(400).json({ message: result.error.issues[0]?.message });
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: result.error.issues[0]?.message });
     }
 
     const { name, username, email } = result.data;
@@ -58,7 +62,9 @@ export const startRegisterUser = async (
       },
     });
 
-    return res.status(200).json({ message: "Verification email sent" });
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT });
   } catch (error) {
     next(error);
   }
@@ -80,14 +86,16 @@ export const registerUser = async (
     const { token, password } = req.body;
 
     if (!token || !password) {
-      return res.status(400).json({ message: "Token and password required" });
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
     }
 
     const decoded = TokenService.verifyEmailVerificationToken(token);
     if (!decoded) {
       return res
-        .status(401)
-        .json({ error: "Invalid or expired verification token" });
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ error: AUTH_MESSAGES.INVALID_VERIFICATION_TOKEN });
     }
 
     const result = registerUserSchema.safeParse({
@@ -98,8 +106,14 @@ export const registerUser = async (
     });
 
     if (!result.success) {
-      const message = result.error.issues[0]?.message || "Validation error";
-      return res.status(400).json({ message });
+      const validationErrors = result.error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message,
+      }));
+      throw new ValidationError(
+        ERROR_MESSAGES.VALIDATION_FAILED,
+        validationErrors
+      );
     }
 
     const { name, username, email } = result.data;
@@ -127,8 +141,8 @@ export const registerUser = async (
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(201).json({
-      message: "User registered successfully",
+    return res.status(HttpStatus.CREATED).json({
+      message: AUTH_MESSAGES.REGISTRATION_SUCCESS,
       user,
       accessToken,
     });
@@ -157,10 +171,10 @@ export const loginUser = async (
         field: issue.path.join("."),
         message: issue.message,
       }));
-
-      console.log(validationErrors)
-
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION_FAILED, validationErrors);
+      throw new ValidationError(
+        ERROR_MESSAGES.VALIDATION_FAILED,
+        validationErrors
+      );
     }
 
     const { identifier, password } = result.data;
@@ -183,8 +197,8 @@ export const loginUser = async (
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({
-      message: "User logged in successfully",
+    return res.status(HttpStatus.OK).json({
+      message: AUTH_MESSAGES.LOGIN_SUCCESS,
       user,
       accessToken,
     });
@@ -207,17 +221,12 @@ export const forgotPassword = async (
 ): Promise<any> => {
   try {
     const identifier = req.body.identifier as string;
-    console.log(identifier);
 
     if (!identifier) {
-      return res.status(400).json({ message: "Identifier is required" });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
     }
 
     const user = await forgotPasswordUseCase.execute(identifier);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
 
     const token = TokenService.genarateEmailVerificationToken({
       name: user.name,
@@ -235,7 +244,7 @@ export const forgotPassword = async (
       },
     });
 
-    return res.status(200).json({ message: "Password reset email sent" });
+    return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT });
   } catch (error) {
     next(error);
   }
@@ -255,26 +264,23 @@ export const resetPassword = async (
 ): Promise<any> => {
   try {
     const { token, password } = req.body;
+
     if (!token || !password) {
       return res
-        .status(400)
-        .json({ message: "Token and password are required" });
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
     }
 
     const decoded = TokenService.verifyEmailVerificationToken(token);
     if (!decoded) {
       return res
-        .status(401)
-        .json({ error: "Invalid or expired verification token" });
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ error: AUTH_MESSAGES.INVALID_RESET_TOKEN });
     }
 
     const user = resetPasswordUseCase.execute(decoded.email, password);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    return res.status(200).json({ message: "Password reset successfully" });
+    return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGES.PASSWORD_RESET_SUCCESS });
   } catch (error) {
     next(error);
   }
@@ -294,22 +300,22 @@ export const refreshToken = async (
 ): Promise<any> => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log(req.cookies.refreshToken);
+
     if (!refreshToken) {
-      return res.status(401).json({ message: "Refresh token is required" });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
     console.log(payload);
     if (typeof payload !== "object" || payload === null) {
-      return res.status(401).json({ message: "Invalid refresh token" });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
     }
 
     const accessToken = TokenService.generateAccessToken(payload);
 
     return res
-      .status(200)
-      .json({ message: "Access token refreshed successfully", accessToken });
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.TOKEN_REFRESH_SUCCESS, accessToken });
   } catch (error) {
     next(error);
   }
@@ -332,12 +338,12 @@ export const logoutUser = async (
     console.log(refreshToken);
 
     if (!refreshToken) {
-      return res.status(401).json({ message: "Refresh token is required" });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
     if (typeof payload !== "object" || payload === null) {
-      return res.status(401).json({ message: "Invalid refresh token" });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
     }
 
     res.clearCookie("refreshToken", {
@@ -346,7 +352,7 @@ export const logoutUser = async (
       sameSite: "strict",
     });
 
-    return res.status(200).json({ message: "User logged out successfully" });
+    return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGES.LOGOUT_SUCCESS });
   } catch (error) {
     next(error);
   }
