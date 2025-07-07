@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
+import { UnauthorizedError } from "../../errors";
 import { User } from "../../1-domine/entities/User";
-import { AuthenticationError } from "../../errors/AuthenticationError";
+import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
 
 export class LoginUserUseCase {
@@ -15,13 +16,13 @@ export class LoginUserUseCase {
     }
 
     if (!user) {
-      throw new AuthenticationError("Invalid credentials");
+      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
     const isValid = bcrypt.compareSync(password, user.password);
 
     if (!isValid) {
-      throw new AuthenticationError("Invalid credentials");
+        throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
     return user;
