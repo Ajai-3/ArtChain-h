@@ -1,6 +1,7 @@
 import { User } from "../entities/User";
 
 export interface IUserRepository {
+  save(user: User): Promise<User>;
   create(user: User): Promise<User>;
   findOneByUsername(username: string): Promise<User | undefined>;
   findOneByEmail(email: string): Promise<User | undefined>;
