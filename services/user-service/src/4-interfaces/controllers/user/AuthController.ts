@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { TokenService } from "../../services/TokenService";
 import {
+  currentPasswordNewPasswordSchema,
   loginUserSchema,
+  passwordTokenSchema,
   registerUserSchema,
   startRegisterSchema,
 } from "../../validators/user.validator";
+import { ValidationError } from "../../../errors";
+import { HttpStatus } from "../../../constants/httpStatus";
 import { config } from "../../../3-infrastructure/config/env";
+import { AUTH_MESSAGES } from "../../../constants/authMessages";
+import { ERROR_MESSAGES } from "../../../constants/errorMessages";
 import { publishToQueue } from "../../../3-infrastructure/utils/rabbit";
 import { LoginUserUseCase } from "../../../2-application/user/LoginUserUseCase";
 import { RegisterUserUseCase } from "../../../2-application/user/RegisterUserUseCase";
@@ -13,10 +19,6 @@ import { ResetPasswordUseCase } from "../../../2-application/user/ResetPasswordU
 import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
 import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswordUseCase";
 import { UserRepositoryImpl } from "../../../3-infrastructure/user/repositories/UserRepositoryImpl";
-import { ValidationError } from "../../../errors";
-import { ERROR_MESSAGES } from "../../../constants/errorMessages";
-import { HttpStatus } from "../../../constants/httpStatus";
-import { AUTH_MESSAGES } from "../../../constants/authMessages";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
@@ -223,7 +225,9 @@ export const forgotPassword = async (
     const identifier = req.body.identifier as string;
 
     if (!identifier) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
     }
 
     const user = await forgotPasswordUseCase.execute(identifier);
@@ -244,7 +248,9 @@ export const forgotPassword = async (
       },
     });
 
-    return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT });
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT });
   } catch (error) {
     next(error);
   }
@@ -263,13 +269,20 @@ export const resetPassword = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const { token, password } = req.body;
+     const result = passwordTokenSchema.safeParse(req.body);
 
-    if (!token || !password) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
+    if (!result.success) {
+      const validationErrors = result.error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message,
+      }));
+      throw new ValidationError(
+        ERROR_MESSAGES.VALIDATION_FAILED,
+        validationErrors
+      );
     }
+
+    const { token, password} = result.data;
 
     const decoded = TokenService.verifyEmailVerificationToken(token);
     if (!decoded) {
@@ -278,13 +291,36 @@ export const resetPassword = async (
         .json({ error: AUTH_MESSAGES.INVALID_RESET_TOKEN });
     }
 
-    const user = resetPasswordUseCase.execute(decoded.email, password);
+    await resetPasswordUseCase.execute(decoded.email, password);
 
-    return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGES.PASSWORD_RESET_SUCCESS });
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.PASSWORD_RESET_SUCCESS });
   } catch (error) {
     next(error);
   }
 };
+
+//#==================================================================================================================
+//# CHAGE PASSWORD
+//#==================================================================================================================
+//# POST /api/v1/users/change-password
+//# Request headers: { authorization: Bearer accessToken }
+//# Request body: { currentPassword: string, newPassword: string }
+//# This controller changes a user's password using their current password.
+//#==================================================================================================================
+export const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction): Promise<any> => {
+    try {
+      const result = currentPasswordNewPasswordSchema.safeParse(req.body);
+      
+    } catch (error) {
+      next(error)
+    }
+  }
+
 
 //#==================================================================================================================
 //# REFRESH USER ACCESS TOKEN
@@ -302,13 +338,17 @@ export const refreshToken = async (
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
     console.log(payload);
     if (typeof payload !== "object" || payload === null) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
     }
 
     const accessToken = TokenService.generateAccessToken(payload);
@@ -338,12 +378,16 @@ export const logoutUser = async (
     console.log(refreshToken);
 
     if (!refreshToken) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
     if (typeof payload !== "object" || payload === null) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
     }
 
     res.clearCookie("refreshToken", {
@@ -352,7 +396,9 @@ export const logoutUser = async (
       sameSite: "strict",
     });
 
-    return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGES.LOGOUT_SUCCESS });
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.LOGOUT_SUCCESS });
   } catch (error) {
     next(error);
   }
