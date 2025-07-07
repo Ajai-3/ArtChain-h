@@ -1,5 +1,5 @@
 import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { TokenService } from "../../services/TokenService";
 import {
   loginUserSchema,
@@ -31,7 +31,8 @@ const forgotPasswordUseCase = new ForgotPasswordUseCase(repo);
 //#==================================================================================================================
 export const startRegisterUser = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<any> => {
   try {
     const result = startRegisterSchema.safeParse(req.body);
@@ -74,7 +75,8 @@ export const startRegisterUser = async (
 //#==================================================================================================================
 export const registerUser = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<any> => {
   try {
     const { token, password } = req.body;
@@ -148,7 +150,9 @@ export const registerUser = async (
 //# Request body: { (email: string or username: string), password: string }
 //# This controller logs in a user using their (email or username) and password.
 //#==================================================================================================================
-export const loginUser = async (req: Request, res: Response): Promise<any> => {
+export const loginUser = async (  req: Request,
+  res: Response,
+  next: NextFunction): Promise<any> => {
   try {
     const result = loginUserSchema.safeParse(req.body);
 
@@ -202,7 +206,8 @@ export const loginUser = async (req: Request, res: Response): Promise<any> => {
 //#==================================================================================================================
 export const forgotPassword = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<any> => {
   try {
     const identifier = req.body.identifier as string;
@@ -250,7 +255,9 @@ export const forgotPassword = async (
 //# Request body: { token: string, password: string }
 //# This controller resets a user's password using their password reset token.
 //#==================================================================================================================
-export const resetPassword = async (req: Request, res: Response): Promise<any> => {
+export const resetPassword = async (  req: Request,
+  res: Response,
+  next: NextFunction): Promise<any> => {
   try {
     const { token, password } = req.body;
     if (!token ||!password) {
@@ -289,7 +296,8 @@ export const resetPassword = async (req: Request, res: Response): Promise<any> =
 //#==================================================================================================================
 export const refreshToken = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<any> => {
   try {
     const refreshToken = req.cookies.refreshToken;
@@ -322,7 +330,9 @@ export const refreshToken = async (
 //# Request headers: { authorization: Bearer accessToken }
 //# This controller logs out a user by deleting their access token from the cookies.
 //#==================================================================================================================
-export const logoutUser = async (req: Request, res: Response): Promise<any> => {
+export const logoutUser = async (  req: Request,
+  res: Response,
+  next: NextFunction): Promise<any> => {
   try {
     const refreshToken = req.cookies.refreshToken;
     console.log(refreshToken);
