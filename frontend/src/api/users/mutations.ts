@@ -82,3 +82,37 @@ export const useForgottPasswordMutation = () => {
     },
   });
 };
+
+export const useResetPasswordMutation = () => {
+  return useMutation({
+    mutationFn: (credentials: { token: string; password: string }) =>
+      apiClient.patch("/api/v1/users/reset-password", credentials),
+    onSuccess: (data) => {
+      // Handle successful password reset
+      console.log("Password reset successful:", data);
+      // Typically you would:
+      // 1. Redirect the user to the login page
+    },
+    onError: (error) => {
+      // Handle errors
+      console.error("Password reset failed:", error);
+    },
+  })
+}
+
+export const changePasswordMutation = () => {
+  return useMutation({
+    mutationFn: (credentials: { currentPassword: string; newPassword: string }) => 
+      apiClient.patch("/api/v1/users/change-password", credentials),
+    onSuccess: (data) => {
+      // Handle successful password change
+      console.log("Password changed successful:", data);
+      // Typically you would:
+      // 1. Display a success message
+    },
+    onError: (error) => {
+      // Handle errors
+      console.error("Password change failed:", error);
+    },
+  })
+}
