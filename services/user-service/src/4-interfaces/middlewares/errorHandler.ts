@@ -9,13 +9,13 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // Normalize error
+
   const error =
     err instanceof AppError
       ? err
       : new InternalServerError(ERROR_MESSAGES.SERVER_ERROR);
 
-  // Prepare consistent response structure
+
   const response = {
     status: "error",
     error: {
@@ -30,7 +30,6 @@ export const errorHandler = (
     },
   };
 
-  console.log("hello")
   console.log("Backend sending error response:", {
     statusCode: error.statusCode,
     body: {
@@ -42,6 +41,6 @@ export const errorHandler = (
       },
     },
   });
-  // Send response
+
   res.status(error.statusCode).json(response);
 };
