@@ -1,14 +1,14 @@
-import { User } from "../../1-domine/entities/User";
-import { AuthenticationError } from "../../errors/AuthenticationError";
+import { NotFoundError } from "../../errors";
 import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
+import { ERROR_MESSAGES } from "../../constants/errorMessages";
 
 export class ResetPasswordUseCase {
     constructor(private userRepo: IUserRepository) {}
 
-    async execute (email: string, newPassword: string) {
+    async execute (email: string, newpassword: string) {
         const user = await this.userRepo.findOneByEmail(email);
         if (!user) {
-            throw new AuthenticationError("User not found.");
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND)
         }
     }    
 }

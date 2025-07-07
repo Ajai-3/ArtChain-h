@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
+import { ConflictError } from "../../errors";
 import { User } from "../../1-domine/entities/User";
-import { AuthenticationError } from "../../errors/AuthenticationError";
+import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
 
 export class RegisterUserUseCase {
@@ -19,14 +20,14 @@ export class RegisterUserUseCase {
       normalizedUsername
     );
     if (existingUserByUsername) {
-      throw new AuthenticationError("Username already exists");
+      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_USERNAME);
     }
 
     const existingUserByEmail = await this.userRepo.findOneByEmail(
       normalizedEmail
     );
     if (existingUserByEmail) {
-      throw new AuthenticationError("Email already exists");
+      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_EMAIL);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
