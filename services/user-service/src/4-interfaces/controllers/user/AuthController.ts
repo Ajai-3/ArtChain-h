@@ -19,12 +19,14 @@ import { ResetPasswordUseCase } from "../../../2-application/user/ResetPasswordU
 import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
 import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswordUseCase";
 import { UserRepositoryImpl } from "../../../3-infrastructure/user/repositories/UserRepositoryImpl";
+import { ChangePasswordUseCase } from "../../../2-application/user/ChangePasswordUseCase";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
 const registerUserUseCase = new RegisterUserUseCase(repo);
 const resetPasswordUseCase = new ResetPasswordUseCase(repo);
 const startRegisterUseCase = new StartRegisterUseCase(repo);
+const changePasswordUseCase = new ChangePasswordUseCase(repo);
 const forgotPasswordUseCase = new ForgotPasswordUseCase(repo);
 
 //#==================================================================================================================
@@ -269,7 +271,7 @@ export const resetPassword = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-     const result = passwordTokenSchema.safeParse(req.body);
+    const result = passwordTokenSchema.safeParse(req.body);
 
     if (!result.success) {
       const validationErrors = result.error.issues.map((issue) => ({
@@ -282,7 +284,7 @@ export const resetPassword = async (
       );
     }
 
-    const { token, password} = result.data;
+    const { token, password } = result.data;
 
     const decoded = TokenService.verifyEmailVerificationToken(token);
     if (!decoded) {
@@ -312,15 +314,35 @@ export const resetPassword = async (
 export const changePassword = async (
   req: Request,
   res: Response,
-  next: NextFunction): Promise<any> => {
-    try {
-      const result = currentPasswordNewPasswordSchema.safeParse(req.body);
-      
-    } catch (error) {
-      next(error)
-    }
-  }
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const result = currentPasswordNewPasswordSchema.safeParse(req.body);
 
+    if (!result.success) {
+      const validationErrors = result.error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message,
+      }));
+      throw new ValidationError(
+        ERROR_MESSAGES.VALIDATION_FAILED,
+        validationErrors
+      );
+    }
+
+    const { currentPassword, newPassword } = result.data;
+
+    const id = "cmckaxexr0000bsa8riu3xhdv";
+
+    await changePasswordUseCase.execute(id, currentPassword, newPassword);
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.PASSWORD_UPDATED });
+  } catch (error) {
+    next(error);
+  }
+};
 
 //#==================================================================================================================
 //# REFRESH USER ACCESS TOKEN
