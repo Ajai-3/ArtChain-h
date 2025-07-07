@@ -1,4 +1,4 @@
-import { StartRegisterUseCase } from "./../../../application/user/StartRegisterUseCase";
+import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
 import { Request, Response } from "express";
 import { TokenService } from "../../services/TokenService";
 import {
@@ -7,16 +7,18 @@ import {
   startRegisterSchema,
 } from "../../validators/user.validator";
 import { AuthenticationError } from "../../../errors/AuthenticationError";
-import { LoginUserUseCase } from "../../../application/user/LoginUserUseCase";
-import { RegisterUserUseCase } from "../../../application/user/RegisterUserUseCase";
-import { UserRepositoryImpl } from "../../../infrastructure/user/repositories/UserRepositoryImpl";
-import { publishToQueue } from "../../../infrastructure/utils/rabbit";
-import { ForgotPasswordUseCase } from "../../../application/user/ForgotPasswordUseCase";
-import { config } from "../../../infrastructure/config/env";
+import { LoginUserUseCase } from "../../../2-application/user/LoginUserUseCase";
+import { RegisterUserUseCase } from "../../../2-application/user/RegisterUserUseCase";
+import { UserRepositoryImpl } from "../../../3-infrastructure/user/repositories/UserRepositoryImpl";
+import { publishToQueue } from "../../../3-infrastructure/utils/rabbit";
+import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswordUseCase";
+import { config } from "../../../3-infrastructure/config/env";
+import { ResetPasswordUseCase } from "../../../2-application/user/ResetPasswordUseCase";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
 const registerUserUseCase = new RegisterUserUseCase(repo);
+const resetPasswordUseCase = new ResetPasswordUseCase(repo);
 const startRegisterUseCase = new StartRegisterUseCase(repo);
 const forgotPasswordUseCase = new ForgotPasswordUseCase(repo);
 
@@ -56,6 +58,9 @@ export const startRegisterUser = async (
 
     return res.status(200).json({ message: "Verification email sent" });
   } catch (error) {
+    if (error instanceof AuthenticationError) {
+      return res.status(401).json({ message: error.message });
+    }
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -73,6 +78,10 @@ export const registerUser = async (
 ): Promise<any> => {
   try {
     const { token, password } = req.body;
+
+    if (!token ||!password) {
+      return res.status(400).json({ message: "Token and password required" });
+    }
 
     const decoded = TokenService.verifyEmailVerificationToken(token);
     if (!decoded) {
@@ -228,11 +237,48 @@ export const forgotPassword = async (
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
+      return res.status(404).json({ message: error.message });
     }
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+//#==================================================================================================================
+//# RESET USER PASSWORD
+//#==================================================================================================================
+//# POST /api/v1/users/reset-password
+//# Request body: { token: string, password: string }
+//# This controller resets a user's password using their password reset token.
+//#==================================================================================================================
+export const resetPassword = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { token, password } = req.body;
+    if (!token ||!password) {
+      return res.status(400).json({ message: "Token and password are required" });
+    }
+
+    const decoded = TokenService.verifyEmailVerificationToken(token);
+    if (!decoded) {
+      return res
+        .status(401)
+        .json({ error: "Invalid or expired verification token" });
+    }
+
+    const user = resetPasswordUseCase.execute(decoded.email, password);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "Password reset successfully" });
+    
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(404).json({ message: error.message });
+    }
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
 
 //#==================================================================================================================
 //# REFRESH USER ACCESS TOKEN

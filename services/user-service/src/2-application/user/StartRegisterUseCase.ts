@@ -1,6 +1,6 @@
-import { User } from "../../domine/entities/User";
+import { User } from "../../1-domine/entities/User";
 import { AuthenticationError } from "../../errors/AuthenticationError";
-import { IUserRepository } from "../../domine/repositories/IUserRepositories";
+import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
 
 export class StartRegisterUseCase {
     constructor(private userRepo: IUserRepository) {}

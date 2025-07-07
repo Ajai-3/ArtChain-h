@@ -1,5 +1,5 @@
 import jwt, { Secret } from "jsonwebtoken";
-import { config } from "../../infrastructure/config/env";
+import { config } from "../../3-infrastructure/config/env";
 interface DecodedToken {
   name: string;
   username: string;
