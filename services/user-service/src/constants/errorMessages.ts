@@ -1,17 +1,18 @@
 export const ERROR_MESSAGES = {
   // Validation
-  VALIDATION_FAILED: "Validation failed",
   INVALID_INPUT: "Invalid input data",
+  VALIDATION_FAILED: "Validation failed",
   
   // 400 Bad Request
   BAD_REQUEST: "Invalid request",
-  INVALID_EMAIL: "Invalid email format",
   INVALID_DATE: "Invalid date format",
+  INVALID_EMAIL: "Invalid email format",
+  INVALID_CREDENTIALS: "Invalid username or password",
   
   // 401 Unauthorized
+  TOKEN_EXPIRED: "Session expired",
   UNAUTHORIZED: "Authentication required",
   INVALID_TOKEN: "Invalid authentication token",
-  TOKEN_EXPIRED: "Session expired",
   
   // 403 Forbidden
   FORBIDDEN: "Permission denied",
