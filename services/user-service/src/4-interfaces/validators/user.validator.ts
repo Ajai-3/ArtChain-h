@@ -55,7 +55,7 @@ export const registerUserSchema = z.object({
 //# LOGIN USER SCHEMA VALIDATION
 //#==================================================================================================================
 export const loginUserSchema = z.object({
-  identifier: z.string().min(3, "Email or username is required"),
+  identifier: z.string().min(3, "Invalid email or username"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 

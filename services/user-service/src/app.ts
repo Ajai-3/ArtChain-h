@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 
 import userRouter from "../src/4-interfaces/routes/user.routes";
 import adminRouter from "../src/4-interfaces/routes/admin.routes";
-import { errorHandler } from "./4-interfaces/middlewares/errorHandler";
+import { errorHandler } from "../src/4-interfaces/middlewares/errorHandler";
 
 
 const app = express();
