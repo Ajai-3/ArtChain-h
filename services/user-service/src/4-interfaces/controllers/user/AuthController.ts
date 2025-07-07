@@ -1,4 +1,3 @@
-import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
 import { Request, Response, NextFunction } from "express";
 import { TokenService } from "../../services/TokenService";
 import {
@@ -6,14 +5,16 @@ import {
   registerUserSchema,
   startRegisterSchema,
 } from "../../validators/user.validator";
-import { AuthenticationError } from "../../../errors/AuthenticationError";
+import { config } from "../../../3-infrastructure/config/env";
+import { publishToQueue } from "../../../3-infrastructure/utils/rabbit";
 import { LoginUserUseCase } from "../../../2-application/user/LoginUserUseCase";
 import { RegisterUserUseCase } from "../../../2-application/user/RegisterUserUseCase";
-import { UserRepositoryImpl } from "../../../3-infrastructure/user/repositories/UserRepositoryImpl";
-import { publishToQueue } from "../../../3-infrastructure/utils/rabbit";
-import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswordUseCase";
-import { config } from "../../../3-infrastructure/config/env";
 import { ResetPasswordUseCase } from "../../../2-application/user/ResetPasswordUseCase";
+import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
+import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswordUseCase";
+import { UserRepositoryImpl } from "../../../3-infrastructure/user/repositories/UserRepositoryImpl";
+import { ValidationError } from "../../../errors";
+import { ERROR_MESSAGES } from "../../../constants/errorMessages";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
@@ -59,10 +60,7 @@ export const startRegisterUser = async (
 
     return res.status(200).json({ message: "Verification email sent" });
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return res.status(401).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Something went wrong" });
+    next(error);
   }
 };
 
@@ -81,7 +79,7 @@ export const registerUser = async (
   try {
     const { token, password } = req.body;
 
-    if (!token ||!password) {
+    if (!token || !password) {
       return res.status(400).json({ message: "Token and password required" });
     }
 
@@ -135,11 +133,7 @@ export const registerUser = async (
       accessToken,
     });
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: "Something went wrong" });
+    next(error);
   }
 };
 
@@ -150,15 +144,23 @@ export const registerUser = async (
 //# Request body: { (email: string or username: string), password: string }
 //# This controller logs in a user using their (email or username) and password.
 //#==================================================================================================================
-export const loginUser = async (  req: Request,
+export const loginUser = async (
+  req: Request,
   res: Response,
-  next: NextFunction): Promise<any> => {
+  next: NextFunction
+): Promise<any> => {
   try {
     const result = loginUserSchema.safeParse(req.body);
 
     if (!result.success) {
-      const message = result.error.issues[0]?.message || "Validation error";
-      return res.status(400).json(message);
+      const validationErrors = result.error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message,
+      }));
+
+      console.log(validationErrors)
+
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION_FAILED, validationErrors);
     }
 
     const { identifier, password } = result.data;
@@ -187,13 +189,7 @@ export const loginUser = async (  req: Request,
       accessToken,
     });
   } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return res.status(401).json({ message: error.message });
-    }
-
-    console.log(error);
-
-    return res.status(500).json({ message: "Something went wrong" });
+    next(error);
   }
 };
 
@@ -241,10 +237,7 @@ export const forgotPassword = async (
 
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(404).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Something went wrong" });
+    next(error);
   }
 };
 
@@ -255,13 +248,17 @@ export const forgotPassword = async (
 //# Request body: { token: string, password: string }
 //# This controller resets a user's password using their password reset token.
 //#==================================================================================================================
-export const resetPassword = async (  req: Request,
+export const resetPassword = async (
+  req: Request,
   res: Response,
-  next: NextFunction): Promise<any> => {
+  next: NextFunction
+): Promise<any> => {
   try {
     const { token, password } = req.body;
-    if (!token ||!password) {
-      return res.status(400).json({ message: "Token and password are required" });
+    if (!token || !password) {
+      return res
+        .status(400)
+        .json({ message: "Token and password are required" });
     }
 
     const decoded = TokenService.verifyEmailVerificationToken(token);
@@ -278,14 +275,10 @@ export const resetPassword = async (  req: Request,
     }
 
     return res.status(200).json({ message: "Password reset successfully" });
-    
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(404).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Something went wrong" });
+    next(error);
   }
-}
+};
 
 //#==================================================================================================================
 //# REFRESH USER ACCESS TOKEN
@@ -318,8 +311,7 @@ export const refreshToken = async (
       .status(200)
       .json({ message: "Access token refreshed successfully", accessToken });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Something went wrong" });
+    next(error);
   }
 };
 
@@ -330,9 +322,11 @@ export const refreshToken = async (
 //# Request headers: { authorization: Bearer accessToken }
 //# This controller logs out a user by deleting their access token from the cookies.
 //#==================================================================================================================
-export const logoutUser = async (  req: Request,
+export const logoutUser = async (
+  req: Request,
   res: Response,
-  next: NextFunction): Promise<any> => {
+  next: NextFunction
+): Promise<any> => {
   try {
     const refreshToken = req.cookies.refreshToken;
     console.log(refreshToken);
@@ -354,6 +348,6 @@ export const logoutUser = async (  req: Request,
 
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Something went wrong" });
+    next(error);
   }
 };
