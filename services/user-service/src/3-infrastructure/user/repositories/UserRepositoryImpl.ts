@@ -3,6 +3,12 @@ import { User } from "../../../1-domine/entities/User";
 import { IUserRepository } from "../../../1-domine/repositories/IUserRepositories";
 
 export class UserRepositoryImpl implements IUserRepository {
+
+  async findOneById(id: string): Promise<User | undefined> {
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    return user || undefined;
+  }
   async findOneByUsername(username: string): Promise<User | undefined> {
     const user = await prisma.user.findUnique({
       where: { username },
