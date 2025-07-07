@@ -17,8 +17,7 @@ export const startRegisterSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, underscores allowed"),
 
   email: z.string().email("Invalid email"),
-})  
-
+});
 
 //#==================================================================================================================
 //# REGISTER USER SCHEMA VALIDATION
@@ -47,7 +46,7 @@ export const registerUserSchema = z.object({
         /[a-z]/.test(val) &&
         /[0-9]/.test(val) &&
         /[^A-Za-z0-9]/.test(val),
-      "Password must include A-Z, a-z, 0-9, and a symbol"
+      "Password must include uppercase, lowercase, number, and symbol"
     ),
 });
 
@@ -59,3 +58,45 @@ export const loginUserSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
+//#===================================================================================================================
+//# PASSWORD AND TOKEN SCHEMA VALIDATION
+//#===================================================================================================================
+export const passwordTokenSchema = z.object({
+  token: z.string().min(10, "Invalid token"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .refine(
+      (val) =>
+        /[A-Z]/.test(val) &&
+        /[a-z]/.test(val) &&
+        /[0-9]/.test(val) &&
+        /[^A-Za-z0-9]/.test(val),
+      "Password must include uppercase, lowercase, number, and symbol"
+    ),
+});
+
+//#==================================================================================================================
+//# CURRENT PASSWORD NEW PASSWORD SCHEMA VALIDATION
+//#==================================================================================================================
+export const currentPasswordNewPasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .refine(
+        (val) =>
+          /[A-Z]/.test(val) &&
+          /[a-z]/.test(val) &&
+          /[0-9]/.test(val) &&
+          /[^A-Za-z0-9]/.test(val),
+        "Password must include uppercase, lowercase, number, and symbol"
+      ),
+  })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: "New password must be different from current password",
+    path: ["newPassword"],
+  });
