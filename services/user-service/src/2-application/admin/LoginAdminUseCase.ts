@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { UnauthorizedError } from "../../errors";
+import { ForbiddenError, UnauthorizedError } from "../../errors";
 import { User } from "../../1-domine/entities/User";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import { IAdminRepository } from './../../1-domine/repositories/IAdminRepositories';
@@ -20,7 +20,7 @@ export class LoginAdminUseCase {
         }
 
         if (admin.role !== "admin") {
-            throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
+            throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
         }
 
         const isValid = await bcrypt.compare(password, admin.password);
