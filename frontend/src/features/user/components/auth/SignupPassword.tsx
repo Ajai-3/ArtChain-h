@@ -1,13 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { passwordSchema } from "../../schemas/authShemas";
-import { type PasswordFormInput } from "../../schemas/authShemas";
-import { Button } from "../../../../components/ui/button";
-import { Input } from "../../../../components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
-import { useSignupverificationMutation } from "../../../../api/user/auth/mutations";
 import { useSearchParams } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "../../../../components/ui/input";
+import { passwordSchema } from "../../schemas/authShemas";
+import { Button } from "../../../../components/ui/button";
+import { type PasswordFormInput } from "../../schemas/authShemas";
+import { useSignupverificationMutation } from "../../../../api/user/auth/mutations";
 
 const SignupPassword: React.FC = () => {
   const [searchParams] = useSearchParams();

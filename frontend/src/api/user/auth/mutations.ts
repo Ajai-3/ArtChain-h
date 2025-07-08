@@ -14,15 +14,8 @@ export const useLoginMutation = () => {
       // 2. Redirect the user
     },
     onError: (error: any) => {
-      // Get the most specific error message available
-      const errorMessage =
-        error.error?.message || error.message || "Login failed";
 
-      console.error("Login failed:", {
-        status: error.status,
-        message: errorMessage,
-        fullError: error,
-      });
+      console.error("Login failed:", error);
     },
   });
 };
