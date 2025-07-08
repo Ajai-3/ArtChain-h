@@ -44,7 +44,7 @@ const ResetPassword: React.FC = () => {
 
   return (
     <div className="flex-col h-screen flex items-center justify-center bg-background text-foreground px-4">
-      <div className="w-[500px] max-w-md bg-card p-6 rounded-xl shadow-xl">
+      <div className="w-[500px] max-w-md bg-card p-10 rounded-2xl shadow-xl border dark:border-zinc-700">
         <div className="mb-6 text-center space-y-2">
           <h2 className="text-2xl font-bold">Create New Password</h2>
           <p className="text-muted-foreground">
