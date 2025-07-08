@@ -50,7 +50,7 @@ export const loginAdmin = async (
     const refreshToken = TokenService.generateRefreshToken(payload);
     const accessToken = TokenService.generateAccessToken(payload);
 
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("adminRefreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -62,6 +62,49 @@ export const loginAdmin = async (
       admin,
       accessToken,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//#==================================================================================================================
+//# ADMIN LOGOUT
+//#==================================================================================================================
+//# POST /api/v1/admin/logout
+//# Request headers: { authorization: Bearer accessToken }
+//# This controller logs out a admin by deleting their refresh token from the cookies.
+//#==================================================================================================================
+export const logoutAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const refreshToken = req.cookies.adminRefreshToken;
+    console.log(refreshToken);
+
+    if (!refreshToken) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
+    }
+
+    const payload = TokenService.verifyRefreshToken(refreshToken);
+    if (typeof payload !== "object" || payload === null) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
+    }
+
+    res.clearCookie("adminRefreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.LOGOUT_SUCCESS });
   } catch (error) {
     next(error);
   }

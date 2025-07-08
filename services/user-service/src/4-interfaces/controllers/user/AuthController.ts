@@ -138,7 +138,7 @@ export const registerUser = async (
     const refreshToken = TokenService.generateRefreshToken(payload);
     const accessToken = TokenService.generateAccessToken(payload);
 
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("userRefreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -194,7 +194,7 @@ export const loginUser = async (
     const refreshToken = TokenService.generateRefreshToken(payload);
     const accessToken = TokenService.generateAccessToken(payload);
 
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("userRefreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -388,7 +388,7 @@ export const refreshToken = async (
 //#==================================================================================================================
 //# POST /api/v1/users/logout
 //# Request headers: { authorization: Bearer accessToken }
-//# This controller logs out a user by deleting their access token from the cookies.
+//# This controller logs out a user by deleting their refresh token from the cookies.
 //#==================================================================================================================
 export const logoutUser = async (
   req: Request,
@@ -396,7 +396,7 @@ export const logoutUser = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.userRefreshToken;
     console.log(refreshToken);
 
     if (!refreshToken) {
@@ -412,7 +412,7 @@ export const logoutUser = async (
         .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
     }
 
-    res.clearCookie("refreshToken", {
+    res.clearCookie("userRefreshToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
