@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
     // Return the error in a consistent structure
     return Promise.reject({
       status: error.response.status,
-      ...error.response.data, // Contains your error object
+      ...error.response.data,
       message: error.response.data?.error?.message || 'Request failed'
     });
   }
