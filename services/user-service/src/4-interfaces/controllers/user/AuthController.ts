@@ -18,7 +18,7 @@ import { RegisterUserUseCase } from "../../../2-application/user/RegisterUserUse
 import { ResetPasswordUseCase } from "../../../2-application/user/ResetPasswordUseCase";
 import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
 import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswordUseCase";
-import { UserRepositoryImpl } from "../../../3-infrastructure/user/repositories/UserRepositoryImpl";
+import { UserRepositoryImpl } from "../../../3-infrastructure/repositories/user/UserRepositoryImpl";
 import { ChangePasswordUseCase } from "../../../2-application/user/ChangePasswordUseCase";
 
 const repo = new UserRepositoryImpl();
@@ -160,7 +160,7 @@ export const registerUser = async (
 //#==================================================================================================================
 //# POST /api/v1/users/login
 //# Request body: { (email: string or username: string), password: string }
-//# This controller logs in a user using their (email or username) and password.
+//# This controller logs in a user or artist using their (email or username) and password.
 //#==================================================================================================================
 export const loginUser = async (
   req: Request,
@@ -271,7 +271,6 @@ export const resetPassword = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    console.log(req.body)
     const result = passwordTokenSchema.safeParse(req.body);
 
     if (!result.success) {
