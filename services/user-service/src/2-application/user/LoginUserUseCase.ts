@@ -12,7 +12,7 @@ export class LoginUserUseCase {
     let user = await this.userRepo.findOneByUsername(normalizedInput);
 
     if (!user) {
-      user = await this.userRepo.findOneByEmail(identifier);
+      user = await this.userRepo.findOneByEmail(normalizedInput);
     }
 
     if (!user) {
