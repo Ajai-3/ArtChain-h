@@ -14,7 +14,7 @@ export default {
         sans: ['Roboto', 'sans-serif'],
       },
       colors: {
-        "main-color": "#04a25b",
+        "main-color": "#02a863",
 
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

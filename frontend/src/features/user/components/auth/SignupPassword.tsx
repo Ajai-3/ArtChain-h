@@ -6,7 +6,7 @@ import { type PasswordFormInput } from "../../schemas/authShemas";
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
-import { useSignupverificationMutation } from "../../../../api/user/users/mutations";
+import { useSignupverificationMutation } from "../../../../api/user/auth/mutations";
 import { useSearchParams } from "react-router-dom";
 
 const SignupPassword: React.FC = () => {
