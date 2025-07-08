@@ -14,8 +14,8 @@ export const ERROR_MESSAGES = {
   UNAUTHORIZED: "Authentication required",
   INVALID_ACCESS_TOKEN: "Invalid access token",
   INVALID_TOKEN: "Invalid authentication token",
-  INCORRECT_CURRENT_PASSWORD: "The current password you entered is incorrect. Please try again.",
   NEW_PASSWORD_IS_SAME_AS_CURRENT: "New password cannot be the same as the current password.",
+  INCORRECT_CURRENT_PASSWORD: "The current password you entered is incorrect. Please try again.",
 
   // 403 Forbidden
   FORBIDDEN: "Permission denied",

@@ -271,6 +271,7 @@ export const resetPassword = async (
   next: NextFunction
 ): Promise<any> => {
   try {
+    console.log(req.body)
     const result = passwordTokenSchema.safeParse(req.body);
 
     if (!result.success) {
