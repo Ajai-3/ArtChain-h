@@ -2,10 +2,10 @@ import bcrypt from "bcrypt";
 import { UnauthorizedError } from "../../errors";
 import { User } from "../../1-domine/entities/User";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
-import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
+import { IAdminRepository } from './../../1-domine/repositories/IAdminRepositories';
 
 export class LoginAdminUseCase {
-    constructor(private adminRepo: IUserRepository) {}
+    constructor(private adminRepo: IAdminRepository) {}
 
     async execute(identifier: string, password: string): Promise<User> {
         const normalizedInput = identifier.toLowerCase();
