@@ -1,4 +1,4 @@
-import apiClient from "../axios";
+import apiClient from "../../axios";
 import { useMutation } from "@tanstack/react-query";
 
 // Mutation for logging in a user
@@ -97,13 +97,15 @@ export const useResetPasswordMutation = () => {
       // Handle errors
       console.error("Password reset failed:", error);
     },
-  })
-}
+  });
+};
 
 export const changePasswordMutation = () => {
   return useMutation({
-    mutationFn: (credentials: { currentPassword: string; newPassword: string }) => 
-      apiClient.patch("/api/v1/users/change-password", credentials),
+    mutationFn: (credentials: {
+      currentPassword: string;
+      newPassword: string;
+    }) => apiClient.patch("/api/v1/users/change-password", credentials),
     onSuccess: (data) => {
       // Handle successful password change
       console.log("Password changed successful:", data);
@@ -114,5 +116,5 @@ export const changePasswordMutation = () => {
       // Handle errors
       console.error("Password change failed:", error);
     },
-  })
-}
+  });
+};

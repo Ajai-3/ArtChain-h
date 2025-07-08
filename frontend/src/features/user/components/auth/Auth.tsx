@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  LoginSchema, 
-  SignupSchema, 
+import {
+  LoginSchema,
+  SignupSchema,
   ForgotPasswordSchema,
   type LoginFormInputs,
   type SignupFormInputs,
-  type ForgotPasswordFormInputs
+  type ForgotPasswordFormInputs,
 } from "../../schemas/authShemas";
-import { useForgottPasswordMutation, useLoginMutation, useSignupMutation } from "../../../../api/users/mutations";
+import {
+  useForgottPasswordMutation,
+  useLoginMutation,
+  useSignupMutation,
+} from "../../../../api/user/users/mutations";
 import { Eye, EyeOff, Mail, Loader2 } from "lucide-react";
 import {
   Tabs,
@@ -32,7 +36,7 @@ const Auth: React.FC = () => {
 
     if (isResetDisabled && countdown > 0) {
       timer = setInterval(() => {
-        setCountdown(prev => prev - 1);
+        setCountdown((prev) => prev - 1);
       }, 1000);
     } else if (countdown === 0) {
       setIsResetDisabled(false);
@@ -43,7 +47,7 @@ const Auth: React.FC = () => {
   }, [isResetDisabled, countdown]);
 
   // Form setups
-  const { 
+  const {
     register: loginRegister,
     handleSubmit: handleLoginSubmit,
     formState: { errors: loginErrors },
@@ -51,7 +55,7 @@ const Auth: React.FC = () => {
     resolver: zodResolver(LoginSchema),
   });
 
-  const { 
+  const {
     register: signupRegister,
     handleSubmit: handleSignupSubmit,
     formState: { errors: signupErrors },
@@ -59,7 +63,7 @@ const Auth: React.FC = () => {
     resolver: zodResolver(SignupSchema),
   });
 
-  const { 
+  const {
     register: forgotRegister,
     handleSubmit: handleForgotSubmit,
     formState: { errors: forgotErrors },
@@ -69,8 +73,9 @@ const Auth: React.FC = () => {
 
   // Mutations
   const { mutate: loginMutation, isPending: isLoggingIn } = useLoginMutation();
-  const { mutate: signupMutation, isPending: isSigningUp } = useSignupMutation();
-  const { mutate: forgotMutation } = useForgottPasswordMutation()
+  const { mutate: signupMutation, isPending: isSigningUp } =
+    useSignupMutation();
+  const { mutate: forgotMutation } = useForgottPasswordMutation();
 
   const handleLogin = (data: LoginFormInputs) => {
     loginMutation(data);
@@ -81,7 +86,7 @@ const Auth: React.FC = () => {
   };
 
   const handleForgot = (data: ForgotPasswordFormInputs) => {
-    forgotMutation(data)
+    forgotMutation(data);
     setIsResetDisabled(true);
     console.log("Forgot password:", data.identifier);
     // Add your API call here if needed
@@ -93,14 +98,12 @@ const Auth: React.FC = () => {
         {!forgotMode ? (
           <>
             <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold mb-2">
-                Welcome to Art Chain
-              </h2>
+              <h2 className="text-2xl font-bold mb-2">Welcome to Art Chain</h2>
               <p className="text-muted-foreground">
                 Secure access to your digital art collection
               </p>
             </div>
-            
+
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="w-full grid grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>
@@ -109,11 +112,15 @@ const Auth: React.FC = () => {
 
               {/* LOGIN TAB */}
               <TabsContent value="login">
-                <form onSubmit={handleLoginSubmit(handleLogin)} className="space-y-4" noValidate>
+                <form
+                  onSubmit={handleLoginSubmit(handleLogin)}
+                  className="space-y-4"
+                  noValidate
+                >
                   <div>
-                    <Input 
+                    <Input
                       variant="green-focus"
-                      placeholder="Email or Username" 
+                      placeholder="Email or Username"
                       {...loginRegister("identifier")}
                     />
                     {loginErrors.identifier && (
@@ -136,7 +143,11 @@ const Auth: React.FC = () => {
                         className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
                       </div>
                     </div>
                     {loginErrors.password && (
@@ -153,9 +164,9 @@ const Auth: React.FC = () => {
                     Forgot Password?
                   </p>
 
-                  <Button 
-                    variant="main" 
-                    type="submit" 
+                  <Button
+                    variant="main"
+                    type="submit"
                     className="w-full"
                     disabled={isLoggingIn}
                   >
@@ -164,7 +175,9 @@ const Auth: React.FC = () => {
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Logging in...
                       </>
-                    ) : "Log In"}
+                    ) : (
+                      "Log In"
+                    )}
                   </Button>
 
                   <Button
@@ -180,9 +193,17 @@ const Auth: React.FC = () => {
 
               {/* SIGNUP TAB */}
               <TabsContent value="signup">
-                <form onSubmit={handleSignupSubmit(handleSignup)} className="space-y-4" noValidate>
+                <form
+                  onSubmit={handleSignupSubmit(handleSignup)}
+                  className="space-y-4"
+                  noValidate
+                >
                   <div>
-                    <Input variant="green-focus" placeholder="Full Name" {...signupRegister("name")} />
+                    <Input
+                      variant="green-focus"
+                      placeholder="Full Name"
+                      {...signupRegister("name")}
+                    />
                     {signupErrors.name && (
                       <p className="text-sm text-red-500 mt-1">
                         {signupErrors.name.message}
@@ -191,7 +212,11 @@ const Auth: React.FC = () => {
                   </div>
 
                   <div>
-                    <Input variant="green-focus" placeholder="Username" {...signupRegister("username")} />
+                    <Input
+                      variant="green-focus"
+                      placeholder="Username"
+                      {...signupRegister("username")}
+                    />
                     {signupErrors.username && (
                       <p className="text-sm text-red-500 mt-1">
                         {signupErrors.username.message}
@@ -200,7 +225,11 @@ const Auth: React.FC = () => {
                   </div>
 
                   <div>
-                    <Input variant="green-focus" placeholder="Email" {...signupRegister("email")} />
+                    <Input
+                      variant="green-focus"
+                      placeholder="Email"
+                      {...signupRegister("email")}
+                    />
                     {signupErrors.email && (
                       <p className="text-sm text-red-500 mt-1">
                         {signupErrors.email.message}
@@ -213,9 +242,9 @@ const Auth: React.FC = () => {
                     the link to complete account setup.
                   </p>
 
-                  <Button 
-                    variant="main" 
-                    type="submit" 
+                  <Button
+                    variant="main"
+                    type="submit"
                     className="w-full"
                     disabled={isSigningUp}
                   >
@@ -224,7 +253,9 @@ const Auth: React.FC = () => {
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Sending link...
                       </>
-                    ) : "Send Verification Link"}
+                    ) : (
+                      "Send Verification Link"
+                    )}
                   </Button>
 
                   <Button
@@ -249,11 +280,15 @@ const Auth: React.FC = () => {
             </div>
             <form
               onSubmit={handleForgotSubmit(handleForgot)}
-              className="space-y-4 w-full max-w-md mx-auto" 
+              className="space-y-4 w-full max-w-md mx-auto"
               noValidate
             >
               <div>
-                <Input variant="green-focus" placeholder="Email or Username" {...forgotRegister("identifier")} />
+                <Input
+                  variant="green-focus"
+                  placeholder="Email or Username"
+                  {...forgotRegister("identifier")}
+                />
                 {forgotErrors.identifier && (
                   <p className="text-sm text-red-500 mt-1">
                     {forgotErrors.identifier.message}
@@ -261,13 +296,15 @@ const Auth: React.FC = () => {
                 )}
               </div>
 
-              <Button 
-              variant="main"
-                type="submit" 
+              <Button
+                variant="main"
+                type="submit"
                 className="w-full"
                 disabled={isResetDisabled}
               >
-                {isResetDisabled ? `Resend in ${countdown}s` : "Send Reset Link"}
+                {isResetDisabled
+                  ? `Resend in ${countdown}s`
+                  : "Send Reset Link"}
               </Button>
               <p
                 className="text-sm text-center cursor-pointer text-blue-500 hover:underline"

@@ -11,7 +11,7 @@ const UserRoutes = [
   <Route path="/reset-password" element={<ResetPassword />} />,
   <Route path="/verify" element={<SignupPassword />} />,
 
-  <Route path="/" element={<UserLayout />} key="user-layout">
+  <Route path="/" element={<UserLayout />}>
     <Route index element={<Home />} />
     <Route path="profile" element={<Profile />} />
   </Route>,

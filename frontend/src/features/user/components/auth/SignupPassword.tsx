@@ -6,7 +6,7 @@ import { type PasswordFormInput } from "../../schemas/authShemas";
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
-import { useSignupverificationMutation } from "../../../../api/users/mutations";
+import { useSignupverificationMutation } from "../../../../api/user/users/mutations";
 import { useSearchParams } from "react-router-dom";
 
 const SignupPassword: React.FC = () => {
@@ -19,10 +19,10 @@ const SignupPassword: React.FC = () => {
     formState: { errors },
   } = useForm<PasswordFormInput>({
     resolver: zodResolver(passwordSchema),
-    defaultValues: { token: urlToken || "" }, 
+    defaultValues: { token: urlToken || "" },
   });
 
-  const { mutate: signupverificationMutation, isPending } = 
+  const { mutate: signupverificationMutation, isPending } =
     useSignupverificationMutation();
 
   const handleVerification = (data: PasswordFormInput) => {
@@ -32,7 +32,7 @@ const SignupPassword: React.FC = () => {
     }
     signupverificationMutation({
       token: data.token,
-      password: data.password
+      password: data.password,
     });
   };
 
@@ -51,7 +51,7 @@ const SignupPassword: React.FC = () => {
         <form onSubmit={handleSubmit(handleVerification)} className="space-y-4">
           {/* Hidden token input */}
           <input type="hidden" {...register("token")} />
-          
+
           <div>
             <div className="relative">
               <Input
