@@ -12,7 +12,7 @@ import Logo from "../../../../components/logo/Logo";
 
 const adminLinks = [
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/admin/users", icon: Users, label: "User Management" },
+  { to: "/admin/user-management", icon: Users, label: "User Management" },
   { to: "/admin/content", icon: Shield, label: "Content Moderation" },
   { to: "/admin/reports", icon: Flag, label: "Report & Abuse" },
   { to: "/admin/wallet", icon: Wallet, label: "Wallet & Financial" },
@@ -24,7 +24,7 @@ const AdminSideBar: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-64 flex flex-col bg-secondary-color">
+    <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-64 flex flex-col bg-secondary-colo flex-shrink-0">
       <div className="mb-4 p-2 border-b border-zinc-200 dark:border-zinc-800">
         <Logo />
       </div>
