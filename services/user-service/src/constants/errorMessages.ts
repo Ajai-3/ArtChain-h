@@ -11,7 +11,9 @@ export const ERROR_MESSAGES = {
 
   // 401 Unauthorized
   TOKEN_EXPIRED: "Session expired",
+  INVALID_USER_ROLE: "Invalid user role",
   UNAUTHORIZED: "Authentication required",
+  ADMIN_REQUIRED: "Admin privileges required",
   INVALID_ACCESS_TOKEN: "Invalid access token",
   INVALID_TOKEN: "Invalid authentication token",
   NEW_PASSWORD_IS_SAME_AS_CURRENT: "New password cannot be the same as the current password.",
