@@ -30,11 +30,12 @@ export const getAllUsers = async (
       ...(sortOrder && { sortOrder: sortOrder === "desc" ? "desc" : "asc" }),
     });
 
+    console.log(result);
+
     res.status(HttpStatus.OK).json({
       success: true,
       message: USER_MESSAGES.FETCH_SUCCESS,
-      data: result.data,
-      meta: result.meta,
+      data: result
     });
   } catch (error) {
     next(error);
