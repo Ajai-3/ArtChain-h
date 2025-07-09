@@ -1,7 +1,7 @@
 import express from "express";
 
 import { refreshToken, loginUser, logoutUser, registerUser, startRegisterUser, forgotPassword, resetPassword, changePassword } from "../controllers/user/AuthController";
-import { AuthMiddleware } from "../middlewares/AuthMiddleware";
+import { AuthMiddleware } from "../middlewares/UserAuthMiddleware";
 
 const router = express.Router();
 
