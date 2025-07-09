@@ -1,8 +1,8 @@
-import { UnauthorizedError } from "../../errors";
 import { TokenService } from "../services/TokenService";
 import { HttpStatus } from "../../constants/httpStatus";
 import { Request, Response, NextFunction } from "express";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
+import { ForbiddenError, UnauthorizedError } from "../../errors";
 
 export const AuthMiddleware = async (
   req: Request,
@@ -24,14 +24,20 @@ export const AuthMiddleware = async (
     }
 
     if (decoded.role !== "user" || decoded.role !== "artist") {
-      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_USER_ROLE);
+      throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 
     (req as any).user = decoded;
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {
-      return res.status(401).json({ error: error.message });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ success: false, error: error.message });
+    }
+     if (error instanceof ForbiddenError) {
+      return res.status(HttpStatus.FORBIDDEN).json({ 
+        success: false,
+        error: error.message 
+      });
     }
     console.error("Authentication error:", error);
     return res
