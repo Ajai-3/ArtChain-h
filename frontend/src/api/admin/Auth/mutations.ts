@@ -1,19 +1,25 @@
 import apiClient from "../../axios";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { loginSuccess, logoutSuccess } from "../../../redux/slices/adminSlice";
+
 
 export const useAdminLoginMutation = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { identifier: string; password: string }) => 
       apiClient.post("/api/v1/admin/login", credentials),
     onSuccess: (data) => {
-      // Handle successful login
+
       console.log("Login successful:", data);
-      // Typically you would:
-      // 1. Store the auth token
-      // 2. Redirect the user
+      dispatch(loginSuccess(data));
+
+      navigate('/admin/dashboard');
+
     },
     onError: (error: any) => {
-      // Get the most specific error message available
       const errorMessage =
         error.error?.message || error.message || "Login failed";
 
@@ -23,5 +29,24 @@ export const useAdminLoginMutation = () => {
         fullError: error,
       });
     },
+  });
+};
+
+
+export const useAdminLogoutMutation = () => {
+const dispatch = useDispatch();
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: () => apiClient.post("/api/v1/admin/logout"),
+    onSuccess: () => {
+      dispatch(logoutSuccess());
+      navigate('/admin-login');
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
+      // Still clear auth state even if API fails
+      dispatch(logoutSuccess());
+      navigate('/admin-login');
+    }
   });
 };
