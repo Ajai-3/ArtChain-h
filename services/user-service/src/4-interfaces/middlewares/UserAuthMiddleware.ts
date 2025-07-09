@@ -1,5 +1,6 @@
 import { UnauthorizedError } from "../../errors";
 import { TokenService } from "../services/TokenService";
+import { HttpStatus } from "../../constants/httpStatus";
 import { Request, Response, NextFunction } from "express";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
 
@@ -22,8 +23,10 @@ export const AuthMiddleware = async (
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
 
-   console.log(decoded);
-    
+    if (decoded.role !== "user" || decoded.role !== "artist") {
+      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_USER_ROLE);
+    }
+
     (req as any).user = decoded;
     next();
   } catch (error) {
@@ -31,6 +34,8 @@ export const AuthMiddleware = async (
       return res.status(401).json({ error: error.message });
     }
     console.error("Authentication error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .json(ERROR_MESSAGES.SERVER_ERROR);
   }
 };
