@@ -13,44 +13,50 @@ export class AdminRepositoryImpl implements IAdminRepository {
   }
 
  async getAllUsers(options: PaginationOptions): Promise<PaginatedResult<User>> {
-        const { page = 1, limit = 10, search, sortBy, sortOrder } = options;
-        const skip = (page - 1) * limit;
+    const { page = 1, limit = 10, search, sortBy, sortOrder } = options;
+    const skip = (page - 1) * limit;
 
-        const where: Prisma.UserWhereInput = search ? {
-            OR: [
-                { name: { contains: search, mode: 'insensitive' } },
-                { email: { contains: search, mode: 'insensitive' } },
-                { username: { contains: search, mode: 'insensitive' } }
-            ]
-        } : {};
-
-        const orderBy: Prisma.UserOrderByWithRelationInput = sortBy ? { 
-            [sortBy]: sortOrder || 'asc' 
-        } : { createdAt: 'desc' };
-
-        const [users, total] = await Promise.all([
-            prisma.user.findMany({
-                where,
-                skip,
-                take: limit,
-                orderBy
-            }),
-            prisma.user.count({ where })
-        ]);
-
-        return {
-            data: users,
-            meta: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit),
-                hasNextPage: page < Math.ceil(total / limit),
-                hasPreviousPage: page > 1
+    const where: Prisma.UserWhereInput = {
+        AND: [
+            search ? {
+                OR: [
+                    { name: { contains: search, mode: 'insensitive' } },
+                    { email: { contains: search, mode: 'insensitive' } },
+                    { username: { contains: search, mode: 'insensitive' } }
+                ]
+            } : {},
+            {
+                role: { in: ['user', 'artist'] } 
             }
-        };
-    }
+        ]
+    };
 
+    const orderBy: Prisma.UserOrderByWithRelationInput = sortBy ? { 
+        [sortBy]: sortOrder || 'asc' 
+    } : { createdAt: 'desc' };
+
+    const [users, total] = await Promise.all([
+        prisma.user.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy
+        }),
+        prisma.user.count({ where })
+    ]);
+
+    return {
+        data: users,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+            hasNextPage: page < Math.ceil(total / limit),
+            hasPreviousPage: page > 1
+        }
+    };
+}
 
   async findOneById(id: string): Promise<User | null> {
     return await prisma.user.findUnique({

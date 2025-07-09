@@ -13,8 +13,6 @@ export const AdminAuthMiddleware = async (
     const authHeader = req.headers.authorization;
     const accessToken = authHeader?.split(" ")[1];
 
-    console.log("admin access token recived", accessToken)
-
     if (!accessToken) {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
