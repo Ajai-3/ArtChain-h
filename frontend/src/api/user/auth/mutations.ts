@@ -20,6 +20,8 @@ export const useLoginMutation = () => {
         user,
         accessToken
       }));
+
+      navigate('/');
     },
     onError: (error: any) => {
 
