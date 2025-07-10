@@ -7,7 +7,7 @@ import {
   FileEdit,
   Settings,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Logo from "../../../../components/logo/Logo";
 
 const adminLinks = [
@@ -21,8 +21,6 @@ const adminLinks = [
 ];
 
 const AdminSideBar: React.FC = () => {
-  const location = useLocation();
-
   return (
     <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-64 flex flex-col bg-secondary-colo flex-shrink-0">
       <div className="mb-4 p-2 border-b border-zinc-200 dark:border-zinc-800">
@@ -30,32 +28,38 @@ const AdminSideBar: React.FC = () => {
       </div>
 
       <div className="flex flex-col gap-1">
-        {adminLinks.map(({ to, icon: Icon, label }) => {
-          const isActive = location.pathname.startsWith(to);
-
-          return (
-            <Link
-              key={to}
-              to={to}
-              className={`p-3 rounded-md flex items-center gap-3 transition-colors ${
+        {adminLinks.map(({ to, icon: Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `p-3 rounded-md flex items-center gap-3 transition-colors ${
                 isActive
                   ? "bg-main-color/10 text-main-color"
                   : "text-zinc-500 hover:bg-main-color/10 hover:text-main-color"
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              <span>{label}</span>
-            </Link>
-          );
-        })}
+              }`
+            }
+          >
+            <Icon className="w-5 h-5" />
+            <span>{label}</span>
+          </NavLink>
+        ))}
       </div>
 
-      <div className="mt-auto hover:bg-main-color/10 hover:text-main-color cursor-pointer rounded-md mb-2">
-        <div className="p-3 rounded-md flex items-center gap-3">
-          <Settings className="w-5 h-5" />
-          <span>Admin Controls</span>
-        </div>
-      </div>
+
+      <NavLink
+        to="/admin/controls"
+        className={({ isActive }) =>
+          `mt-auto p-3 rounded-md flex items-center gap-3 transition-colors ${
+            isActive
+              ? "bg-main-color/10 text-main-color"
+              : "text-zinc-500 hover:bg-main-color/10 hover:text-main-color"
+          }`
+        }
+      >
+        <Settings className="w-5 h-5" />
+        <span>Admin Controls</span>
+      </NavLink>
     </div>
   );
 };
