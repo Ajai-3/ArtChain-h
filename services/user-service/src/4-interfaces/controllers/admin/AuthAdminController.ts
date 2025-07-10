@@ -67,6 +67,46 @@ export const loginAdmin = async (
   }
 };
 
+//#===================================================================================================================
+//# ADMIN REFRESH TOKEN
+//#===================================================================================================================
+//# POST /api/v1/admin/refresh-token
+//# Request headers: { authorization: Bearer refreshToken }
+//# This controller refreshes a admin's access token using their refresh token.
+//#===================================================================================================================
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const refreshToken = req.cookies.adminRefreshToken;
+
+    if (!refreshToken) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
+    }
+
+    const payload = TokenService.verifyRefreshToken(refreshToken);
+
+    if (typeof payload !== "object" || payload === null) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
+    }
+
+    const accessToken = TokenService.generateAccessToken(payload);
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: AUTH_MESSAGES.TOKEN_REFRESH_SUCCESS, accessToken });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 //#==================================================================================================================
 //# ADMIN LOGOUT
 //#==================================================================================================================

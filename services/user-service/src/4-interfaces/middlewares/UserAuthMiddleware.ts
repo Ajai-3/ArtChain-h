@@ -23,9 +23,7 @@ export const UserAuthMiddleware = async (
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
 
-    console.log(decoded)
-
-    if (decoded.role !== "user" || decoded.role !== "artist") {
+    if (decoded.role !== "user" && decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 
@@ -33,17 +31,21 @@ export const UserAuthMiddleware = async (
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ success: false, error: error.message });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ 
+        success: false, 
+        error: error.message 
+      });
     }
-     if (error instanceof ForbiddenError) {
+    if (error instanceof ForbiddenError) {
       return res.status(HttpStatus.FORBIDDEN).json({ 
         success: false,
         error: error.message 
       });
     }
     console.error("Authentication error:", error);
-    return res
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .json(ERROR_MESSAGES.SERVER_ERROR);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: ERROR_MESSAGES.SERVER_ERROR
+    });
   }
 };
