@@ -1,6 +1,5 @@
-// import { IAdminRepository } from "../../1-domine/repositories/IAdminRepositories";
-// import { UserStatus } from "../../domine/enums/userStatus.enum";
 // import { USER_MESSAGES } from "../../constants/userMessages";
+// import { IAdminRepository } from "../../1-domine/repositories/IAdminRepositories";
 
 // export class ChangeUserStatusUseCase {
 //   constructor(private readonly adminRepository: IAdminRepository) {}

@@ -23,6 +23,10 @@ export class LoginUserUseCase {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN)
     }
 
+    if (user.status !== "active") {
+      throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
+    }
+
     const isValid = bcrypt.compareSync(password, user.password);
 
     if (!isValid) {
