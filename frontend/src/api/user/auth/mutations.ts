@@ -1,17 +1,25 @@
+import { useDispatch } from "react-redux";
 import apiClient from "../../axios";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { setUser } from "../../../redux/slices/userSlice";
 
 // Mutation for logging in a user
 export const useLoginMutation = () => {
+    const dispatch = useDispatch();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { identifier: string; password: string }) =>
       apiClient.post("/api/v1/users/login", credentials),
-    onSuccess: (data) => {
-      // Handle successful login
-      console.log("Login successful:", data);
-      // Typically you would:
-      // 1. Store the auth token
-      // 2. Redirect the user
+    onSuccess: (data: any) => {
+      console.log("data", data)
+
+        const { user, accessToken } = data;
+      
+      dispatch(setUser({
+        user,
+        accessToken
+      }));
     },
     onError: (error: any) => {
 

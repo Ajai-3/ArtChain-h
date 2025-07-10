@@ -15,7 +15,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
 app.use(
   cors({
     origin: config.frontend_url,
@@ -29,6 +28,7 @@ app.use(
     credentials: true,
   })
 );
+
 
 app.use("/", mainRoute);
 

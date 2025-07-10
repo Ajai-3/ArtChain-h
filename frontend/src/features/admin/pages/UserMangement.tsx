@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import { Skeleton } from '../../../components/ui/skeleton';
 import { useGetAllUsers } from '../../../api/admin/user-management/queries';
 
 const UserManagement: React.FC = () => {
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
   const { data, isLoading, isError, error } = useGetAllUsers({
     page,
     limit: 10,

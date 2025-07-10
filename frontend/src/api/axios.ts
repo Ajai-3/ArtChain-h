@@ -1,5 +1,23 @@
 import axios from "axios";
-import { store } from './../redux/store';
+import { store } from "../redux/store";
+import { logout, setAccessToken } from "../redux/slices/userSlice";
+import { adminLogout, setAdminAccessToken } from "../redux/slices/adminSlice";
+
+interface RefreshTokenResponse {
+  accessToken: string;
+  expiresIn?: number;
+  tokenType?: string;
+}
+
+interface ApiError {
+  status: number;
+  message: string;
+  isNetworkError?: boolean;
+  fullError?: any;
+}
+
+const MAX_REFRESH_RETRIES = 3;
+let refreshRetryCount = 0;
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -7,40 +25,104 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 30000,
 });
 
-// Request interceptor
-apiClient.interceptors.request.use((config) => {
-  const state = store.getState()
-  const token = state.user.accessToken || state.admin.accessToken;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+declare module "axios" {
+  interface AxiosRequestConfig {
+    _retry?: boolean;
+    _noRetry?: boolean;
   }
-  return config;
+}
+
+apiClient.interceptors.request.use((config) => {
+  try {
+    const state = store.getState();
+    const isAdminRequest = config.url?.includes("/api/v1/admin");
+    const token = isAdminRequest
+      ? state?.admin?.accessToken ?? null
+      : state?.user?.accessToken ?? null;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  } catch (error) {
+    console.error("Request interceptor error:", error);
+    return config;
+  }
 });
 
-// Response interceptor
 apiClient.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error) => {
     if (!error.response) {
-      return Promise.reject({
-        message: 'Network Error',
-        status: 503
-      });
+      const networkError: ApiError = {
+        status: 503,
+        message: error.code === "ECONNABORTED" ? "Request timed out" : "Network Error",
+        isNetworkError: true,
+        fullError: error
+      };
+
+      if (error.message && error.message.includes("Failed to fetch")) {
+        networkError.message = "CORS error: Backend might be unavailable or misconfigured";
+      }
+
+      return Promise.reject(networkError);
     }
 
-    // Debug the raw response
-    console.log('Raw error response:', {
-      status: error.response.status,
-      data: error.response.data
-    });
+    const originalRequest = error.config;
 
-    // Return the error in a consistent structure
+    if (error.response.status === 401 && 
+        !originalRequest._retry && 
+        !originalRequest._noRetry &&
+        refreshRetryCount < MAX_REFRESH_RETRIES) {
+      
+      originalRequest._retry = true;
+      refreshRetryCount++;
+
+      try {
+        const isAdminRequest = originalRequest.url?.includes("/api/v1/admin");
+        const refreshEndpoint = isAdminRequest
+          ? "/api/v1/admin/refresh-token"
+          : "/api/v1/users/refresh-token";
+
+        const response = await apiClient.get<RefreshTokenResponse>(refreshEndpoint, {
+          timeout: 30000,
+          _noRetry: true
+        });
+
+        const newToken = response?.accessToken;
+
+        if (isAdminRequest) {
+          store.dispatch(setAdminAccessToken(newToken));
+        } else {
+          store.dispatch(setAccessToken(newToken));
+        }
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        refreshRetryCount = 0;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        if (refreshRetryCount >= MAX_REFRESH_RETRIES) {
+          const isAdmin = originalRequest.url?.includes("/api/v1/admin");
+          store.dispatch(isAdmin ? adminLogout() : logout());
+        }
+
+        return Promise.reject({
+          status: 401,
+          message: refreshRetryCount >= MAX_REFRESH_RETRIES
+            ? "Session expired. Please log in again."
+            : "Refreshing session...",
+          fullError: refreshError
+        });
+      }
+    }
+
     return Promise.reject({
       status: error.response.status,
-      ...error.response.data,
-      message: error.response.data?.error?.message || 'Request failed'
+      message: error.response.data?.error?.message || "Request failed",
+      fullError: error.response
     });
   }
 );

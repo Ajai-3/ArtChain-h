@@ -2,7 +2,7 @@ import apiClient from "../../axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { loginSuccess, logoutSuccess } from "../../../redux/slices/adminSlice";
+import { loginSuccess, adminLogout } from "../../../redux/slices/adminSlice";
 
 
 export const useAdminLoginMutation = () => {
@@ -39,13 +39,13 @@ const dispatch = useDispatch();
   return useMutation({
     mutationFn: () => apiClient.post("/api/v1/admin/logout"),
     onSuccess: () => {
-      dispatch(logoutSuccess());
+      dispatch(adminLogout());
       navigate('/admin-login');
     },
     onError: (error) => {
       console.error("Logout failed:", error);
       // Still clear auth state even if API fails
-      dispatch(logoutSuccess());
+      dispatch(adminLogout());
       navigate('/admin-login');
     }
   });
