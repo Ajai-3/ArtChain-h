@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import { ForbiddenError, UnauthorizedError } from "../../errors";
 
-export const AuthMiddleware = async (
+export const UserAuthMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -22,6 +22,8 @@ export const AuthMiddleware = async (
     if (!decoded || typeof decoded !== "object" || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
+
+    console.log(decoded)
 
     if (decoded.role !== "user" || decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);

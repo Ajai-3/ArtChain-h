@@ -357,27 +357,41 @@ export const refreshToken = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const tokenType = req.headers['x-token-type'] as 'admin' | 'user';
+    const cookieName = tokenType === 'admin' ? 'adminRefreshToken' : 'userRefreshToken';
+
+    console.log(tokenType)
+    
+    const refreshToken = req.cookies[cookieName];
+
+    console.log(refreshToken)
 
     if (!refreshToken) {
-      return res
-        .status(HttpStatus.UNAUTHORIZED)
-        .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ 
+        message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED 
+      });
     }
 
     const payload = TokenService.verifyRefreshToken(refreshToken);
-    console.log(payload);
-    if (typeof payload !== "object" || payload === null) {
-      return res
-        .status(HttpStatus.UNAUTHORIZED)
-        .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
+    
+    console.log(payload)
+    if (typeof payload !== "object" || payload === null || payload.role !== tokenType) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ 
+        message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN 
+      });
     }
+
+    console.log("hai")
 
     const accessToken = TokenService.generateAccessToken(payload);
 
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: AUTH_MESSAGES.TOKEN_REFRESH_SUCCESS, accessToken });
+
+    console.log(accessToken)
+
+    return res.status(HttpStatus.OK).json({ 
+      message: AUTH_MESSAGES.TOKEN_REFRESH_SUCCESS, 
+      accessToken 
+    });
   } catch (error) {
     next(error);
   }
