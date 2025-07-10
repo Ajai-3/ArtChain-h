@@ -94,7 +94,7 @@ const Auth: React.FC = () => {
 
   return (
     <div className="flex-col h-screen flex items-center justify-center bg-background text-foreground px-4">
-      <div className="w-[500px] max-w-md bg-card p-10 rounded-2xl shadow-xl border dark:border-zinc-700 dark:bg-zinc-900">
+      <div className="w-[500px] max-w-md bg-card p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900">
         {!forgotMode ? (
           <>
             <div className="mb-6 text-center">

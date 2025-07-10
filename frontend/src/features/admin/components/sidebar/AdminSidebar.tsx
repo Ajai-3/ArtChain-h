@@ -22,7 +22,7 @@ const adminLinks = [
 
 const AdminSideBar: React.FC = () => {
   return (
-    <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-64 flex flex-col bg-secondary-colo flex-shrink-0">
+    <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-64 flex flex-col bg-secondary-color flex-shrink-0">
       <div className="mb-4 p-2 border-b border-zinc-200 dark:border-zinc-800">
         <Logo />
       </div>
