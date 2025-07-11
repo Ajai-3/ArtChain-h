@@ -24,7 +24,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex w-full">
       <UserSettingsSideBar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
