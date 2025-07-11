@@ -35,8 +35,8 @@ const UserSideBar: React.FC = () => {
             className={({ isActive }) =>
               `p-3 rounded-md flex items-center justify-center transition-colors ${
                 isActive
-                  ? "bg-zinc-700/30 text-white"
-                  : "text-zinc-800 dark:text-gray-500 hover:bg-zinc-600/30"
+                  ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
+                  : "text-zinc-800 hover:text-white dark:hover:text-white dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
               }`
             }
             title={label}
@@ -52,8 +52,8 @@ const UserSideBar: React.FC = () => {
           className={({ isActive }) =>
             `p-3 rounded-md flex items-center justify-center transition-colors ${
               isActive
-                ? "bg-zinc-700/30 text-white"
-                : "text-zinc-800 dark:text-gray-500 hover:bg-zinc-600/30"
+                ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
+                : "text-zinc-800 dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
             }`
           }
           title="Settings"
