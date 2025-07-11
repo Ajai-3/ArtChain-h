@@ -2,7 +2,7 @@ import React from 'react'
 
 const Home:React.FC = () => {
   return (
-    <div className='h-[calc(100vh-62px)] overflow-auto'>Home
+    <div className='h-[calc(100vh-62px)] p-4 scrollbar overflow-auto'>Home
       Lorem ipsum dolor sit, amet consectetur adipisicing elit. A mollitia beatae aliquid asperiores, voluptatum repudiandae temporibus amet laudantium quod sint qui rem, ratione accusantium deserunt quae harum! Magni, sint repudiandae.
       Laboriosam dolorum cumque, mollitia quod explicabo doloremque? Ratione praesentium facilis explicabo perferendis cum! Temporibus, quos eveniet. Nulla, error. Hic quos sed quam ad illo quas fugiat non maiores officia similique!
       Quae non ipsam dicta. Sequi eveniet veniam saepe excepturi sapiente. Nisi nulla consequatur reprehenderit molestiae, labore voluptates amet neque fugit enim. Eos cum nihil, nulla fuga sunt nesciunt at possimus.

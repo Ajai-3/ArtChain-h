@@ -130,3 +130,44 @@ textarea:-webkit-autofill:focus {
 }
 
 
+/* Base */
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+/* Light Theme */
+:root {
+  --scroll-track: #e5e7eb;        
+  --scroll-thumb: #9ca3af;           
+  --scroll-thumb-hover: #6b7280;     
+}
+
+/* Dark Theme */
+.dark {
+  --scroll-track: #111827;           
+  --scroll-thumb: #6b7280;           
+  --scroll-thumb-hover: #9ca3af;     
+}
+
+/* WebKit Styling */
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb);
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scroll-thumb-hover);
+}
+
+

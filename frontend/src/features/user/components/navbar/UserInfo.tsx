@@ -1,6 +1,7 @@
 import React from "react";
 import { Bell } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "../../../../components/ui/button";
 
 const UserInfo: React.FC = () => {
   const user = {
@@ -30,22 +31,22 @@ const UserInfo: React.FC = () => {
 
           {/*Become a Creator Button */}
           <Link to="/become-creater">
-            <button className="bg-main-color dark:text-white py-1 px-2 rounded-md hover:bg-main-color/80">
+            <Button variant="main" className="bg-main-color dark:text-white py-1 px-2 rounded-md hover:bg-main-color/80">
               Become a Creator
-            </button>
+            </Button>
           </Link>
         </div>
       ) : (
         <div className="flex gap-4">
           <Link to="/login">
-            <button className="bg-transparent dark:text-white py-1 px-2 rounded-md hover:text-green-300">
+            <Button variant="transparant" className="bg-transparent dark:text-white py-1 px-2 rounded-md hover:text-green-300">
               Log in
-            </button>
+            </Button>
           </Link>
           <Link to="/signup">
-            <button className="bg-main-color dark:text-white py-1 px-2 rounded-md hover:bg-main-color/80">
+            <Button variant="main" className="bg-main-color dark:text-white py-1 px-2 rounded-md hover:bg-main-color/80">
               Sign up
-            </button>
+            </Button>
           </Link>
         </div>
       )}
