@@ -20,6 +20,7 @@
     "@types/redux-persist": "^4.0.0",
     "axios": "^1.10.0",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",

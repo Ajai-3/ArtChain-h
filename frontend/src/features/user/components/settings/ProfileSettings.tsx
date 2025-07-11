@@ -2,7 +2,9 @@ import React from 'react'
 
 const ProfileSettings:React.FC = () => {
   return (
-    <div>ProfileSettings</div>
+    <div>
+      <h1 className='font-semibold text-lg'>Edit Profile</h1>
+    </div>
   )
 }
 
