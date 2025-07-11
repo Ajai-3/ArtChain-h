@@ -4,6 +4,7 @@ import SearchBar from "./SearchBar";
 import { Menu } from "lucide-react";
 import ArtCoin from "./ArtCoin";
 import UserInfo from "./UserInfo";
+import { ThemeToggle } from "../../../../components/ThemeToggle";
 
 const Navbar: React.FC = () => {
   const coin = 120; 
@@ -20,6 +21,7 @@ const Navbar: React.FC = () => {
 
      <div className="flex items-center gap-6">
        <ArtCoin coin={coin} />
+       <ThemeToggle />
       <UserInfo />
      </div>
     </div>
