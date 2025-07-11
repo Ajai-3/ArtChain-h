@@ -23,7 +23,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ),
           variant === "green-focus" && cn(
             "rounded-lg border dark:border-zinc-800",
-            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-main-color focus-visible:border-main-color"
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-main-color focus-visible:border-main-color bg-transparent"
           ),
           variant === "search" && cn(
             "rounded-full border dark:border-zinc-700",

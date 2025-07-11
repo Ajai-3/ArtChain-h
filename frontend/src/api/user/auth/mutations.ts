@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import apiClient from "../../axios";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { setUser } from "../../../redux/slices/userSlice";
+import { logout, setUser } from "../../../redux/slices/userSlice";
 
 // Mutation for logging in a user
 export const useLoginMutation = () => {
@@ -39,70 +39,66 @@ export const useSignupMutation = () => {
       email: string;
     }) => apiClient.post("/api/v1/users/start-register", credentials),
     onSuccess: (data) => {
-      // Handle successful signup
       console.log("Verification email sended:", data);
-      // Typically you would:
-      // 1. Display a success message
-      // 2. Redirect the user to the login page
     },
     onError: (error) => {
-      // Handle errors
       console.error("Signup failed:", error);
     },
   });
 };
 
+// Mutation for verifying a new user
 export const useSignupverificationMutation = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string; password: string }) =>
       apiClient.post("/api/v1/users/register", credentials),
-    onSuccess: (data) => {
-      // Handle successful verification
-      console.log("Email verified:", data);
-      // Typically you would:
-      // 1. Redirect the user to the login page
+    onSuccess: (data: any) => {
+        const { user, accessToken } = data;
+      
+      dispatch(setUser({
+        user,
+        accessToken
+      }));
+
+      navigate('/');
     },
     onError: (error) => {
-      // Handle errors
       console.error("Verification failed:", error);
     },
   });
 };
 
+// Mutation for requesting password reset
 export const useForgottPasswordMutation = () => {
   return useMutation({
     mutationFn: (credentials: { identifier: string }) =>
       apiClient.post("/api/v1/users/forgot-password", credentials),
     onSuccess: (data) => {
-      // Handle successful password reset request
       console.log("Password reset request sent:", data);
-      // Typically you would:
-      // 1. Display a success message
     },
     onError: (error) => {
-      // Handle errors
       console.error("Password reset failed:", error);
     },
   });
 };
 
+// Mutation for resetting password
 export const useResetPasswordMutation = () => {
   return useMutation({
     mutationFn: (credentials: { token: string; password: string }) =>
       apiClient.patch("/api/v1/users/reset-password", credentials),
     onSuccess: (data) => {
-      // Handle successful password reset
       console.log("Password reset successful:", data);
-      // Typically you would:
-      // 1. Redirect the user to the login page
     },
     onError: (error) => {
-      // Handle errors
       console.error("Password reset failed:", error);
     },
   });
 };
 
+// Mutation for changing password
 export const changePasswordMutation = () => {
   return useMutation({
     mutationFn: (credentials: {
@@ -110,14 +106,26 @@ export const changePasswordMutation = () => {
       newPassword: string;
     }) => apiClient.patch("/api/v1/users/change-password", credentials),
     onSuccess: (data) => {
-      // Handle successful password change
       console.log("Password changed successful:", data);
-      // Typically you would:
-      // 1. Display a success message
     },
     onError: (error) => {
-      // Handle errors
       console.error("Password change failed:", error);
+    },
+  });
+};
+
+// Mutation for logging out a user
+export const useLogoutMutation = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: () => apiClient.post("/api/v1/users/logout"),
+    onSuccess: () => {
+      dispatch(logout());
+      navigate('/login');
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
     },
   });
 };

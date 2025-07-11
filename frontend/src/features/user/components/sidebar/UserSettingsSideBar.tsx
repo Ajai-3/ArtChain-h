@@ -33,7 +33,8 @@ const userSettingsTabs = [
 const UserSettingsSideBar: React.FC<{
   activeTab: string;
   setActiveTab: (tab: string) => void;
-}> = ({ activeTab, setActiveTab }) => {
+  onLogoutClick: () => void;
+}> = ({ activeTab, setActiveTab, onLogoutClick }) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -74,7 +75,7 @@ const UserSettingsSideBar: React.FC<{
         </button>
         
         <button
-          onClick={() => {/* Add your logout logic here */}}
+          onClick={onLogoutClick}
           className="w-full p-3 rounded-md flex items-center gap-3 transition-colors text-zinc-700 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-zinc-600/30 dark:hover:text-white hover:text-white"
         >
           <LogOut className="w-5 h-5" />
