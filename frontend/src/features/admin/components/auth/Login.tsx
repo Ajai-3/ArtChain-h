@@ -8,7 +8,7 @@ import { type LoginFormInputs } from "../../schema/adminAuthSchema";
 import { useAdminLoginMutation } from "../../../../api/admin/Auth/mutations";
 import { useForm } from "react-hook-form";
 
-export const Login: React.FC = () => {
+const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -95,3 +95,5 @@ export const Login: React.FC = () => {
     </div>
   );
 };
+
+export default Login;

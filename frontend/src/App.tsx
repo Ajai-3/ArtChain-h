@@ -1,15 +1,14 @@
-import React from 'react'
-import { Routes } from 'react-router-dom'
-import UserRoutes from './routes/UserRoutes'
-import AdminRoutes from './routes/AdminRoutes'
+import React from "react";
+import UserRoutes from "./routes/user/UserRoutes";
+import AdminRoutes from "./routes/admin/AdminRoutes";
 
-const App:React.FC = () => {
+const App: React.FC = () => {
   return (
-    <Routes>
-      {AdminRoutes}
-      {UserRoutes}
-    </Routes>
-  )
-}
+    <>
+      <AdminRoutes />
+      <UserRoutes />
+    </>
+  );
+};
 
-export default App
+export default App;
