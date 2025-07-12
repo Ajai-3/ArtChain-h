@@ -4,9 +4,9 @@ import { config } from './env';
 export const connectToDatabase = async () => {
   try {
     await mongoose.connect(config.database_url!);
-    console.log('✅ Connected to MongoDB Atlas');
+    console.log('Connected to MongoDB Atlas');
   } catch (err) {
-    console.error('❌ MongoDB connection error:', err);
+    console.error('MongoDB connection error:', err);
     process.exit(1);
   }
 };
