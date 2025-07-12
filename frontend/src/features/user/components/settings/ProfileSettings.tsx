@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { Input } from "../../../../components/ui/input";
 import type { RootState } from "../../../../redux/store";
 import { Button } from "../../../../components/ui/button";
@@ -11,11 +11,21 @@ import type { UpdateProfileFormInputs } from "../../schemas/authShemas";
 import { updateProfileSchema } from "../../schemas/authShemas";
 import { useUpdateProfileMutation } from "../../../../api/user/profile/mutations";
 import { uploadToFolder } from "../../../../utils/cloudinary";
+import { Loader2 } from "lucide-react";
+
+interface CropArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 const ProfileSettings: React.FC = () => {
-  const currentUser = useSelector((state: RootState) => state.user.user);
+  const user = useSelector((state: RootState) => state.user.user);
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfileMutation();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  const [isCropping, setIsCropping] = useState(false);
 
   const {
     register,
@@ -26,115 +36,131 @@ const ProfileSettings: React.FC = () => {
   } = useForm<UpdateProfileFormInputs>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      name: currentUser?.name || "",
-      username: currentUser?.username || "",
-      bio: currentUser?.bio || "",
-      country: currentUser?.country || "",
-      profileImage: currentUser?.profileImage || "",
-      bannerImage: currentUser?.bannerImage || "",
-      backgroundImage: currentUser?.backgroundImage || "",
+      name: user?.name || "",
+      username: user?.username || "",
+      bio: user?.bio || "",
+      country: user?.country || "",
+      profileImage: user?.profileImage || "",
+      bannerImage: user?.bannerImage || "",
+      backgroundImage: user?.backgroundImage || "",
     },
   });
 
-  // Watch all form values
   const formValues = watch();
 
-  const [cropModal, setCropModal] = useState<{
-    isOpen: boolean;
-    field: keyof UpdateProfileFormInputs | null;
-    imageSrc: string | null;
-    originalFile: File | null;
-  }>({ isOpen: false, field: null, imageSrc: null, originalFile: null });
+  const [cropModal, setCropModal] = useState({
+    isOpen: false,
+    field: null as keyof UpdateProfileFormInputs | null,
+    imageSrc: null as string | null,
+    originalFile: null as File | null,
+  });
 
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  } | null>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(null);
 
   const handleImagePreview = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: keyof UpdateProfileFormInputs
   ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setServerError("Image size must be less than 5MB");
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      setCropModal({ isOpen: true, field, imageSrc: url, originalFile: file });
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setServerError("Image size must be less than 5MB");
+      return;
     }
+
+    setCropModal({
+      isOpen: true,
+      field,
+      imageSrc: URL.createObjectURL(file),
+      originalFile: file,
+    });
   };
 
   const onCropComplete = useCallback(
-    (_croppedArea: any, croppedAreaPixels: any) => {
+    (_: unknown, croppedAreaPixels: CropArea) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
     []
   );
 
-  const getCroppedImg = async (
-    imageSrc: string,
-    pixelCrop: any
-  ): Promise<Blob> => {
-    const image = new Image();
-    image.src = imageSrc;
-    await new Promise((resolve) => (image.onload = resolve));
+  const getCroppedImg = async (imageSrc: string, pixelCrop: CropArea): Promise<Blob> => {
+    setIsCropping(true);
+    try {
+      const image = new Image();
+      image.src = imageSrc;
+      await new Promise<void>((resolve) => {
+        image.onload = () => resolve();
+      });
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d")!;
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas context not available");
 
-    ctx.drawImage(
-      image,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
-      0,
-      0,
-      pixelCrop.width,
-      pixelCrop.height
-    );
+      canvas.width = pixelCrop.width;
+      canvas.height = pixelCrop.height;
 
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        if (blob) {
+      ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        pixelCrop.width,
+        pixelCrop.height
+      );
+
+      return new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error("Canvas to Blob conversion failed"));
+            return;
+          }
           resolve(blob);
-        }
-      }, "image/jpeg");
-    });
+        }, "image/jpeg");
+      });
+    } finally {
+      setIsCropping(false);
+    }
   };
 
   const handleCropSave = async () => {
-    if (cropModal.imageSrc && cropModal.field && croppedAreaPixels && cropModal.originalFile) {
+    if (!cropModal.imageSrc || !cropModal.field || !croppedAreaPixels || !cropModal.originalFile) {
+      return;
+    }
+
+    try {
+      setIsImageUploading(true);
+      const croppedBlob = await getCroppedImg(cropModal.imageSrc, croppedAreaPixels);
+      const previewUrl = URL.createObjectURL(croppedBlob);
+      setValue(cropModal.field, previewUrl);
+
       try {
-        const croppedBlob = await getCroppedImg(cropModal.imageSrc, croppedAreaPixels);
-        const croppedFile = new File([croppedBlob], cropModal.originalFile.name, {
-          type: "image/jpeg",
-          lastModified: Date.now(),
-        });
-
-        // Show preview immediately
-        const previewUrl = URL.createObjectURL(croppedBlob);
-        setValue(cropModal.field, previewUrl);
-
-        try {
-          const cloudinaryUrl = await uploadToFolder(croppedFile, "user-profiles");
-          setValue(cropModal.field, cloudinaryUrl);
-        } catch (uploadError) {
-          console.error("Cloudinary upload failed:", uploadError);
-          setServerError("Image saved locally (upload failed)");
-        }
-
-        setCropModal({ isOpen: false, field: null, imageSrc: null, originalFile: null });
+        const cloudinaryUrl = await uploadToFolder(
+          new File([croppedBlob], cropModal.originalFile.name, {
+            type: "image/jpeg",
+            lastModified: Date.now(),
+          }),
+          "user-profiles"
+        );
+        setValue(cropModal.field, cloudinaryUrl);
       } catch (error) {
-        console.error("Error processing image:", error);
-        setServerError("Failed to process image");
+        console.error("Upload failed:", error);
+        setServerError("Image saved locally (upload failed)");
       }
+    } catch (error) {
+      console.error("Image processing failed:", error);
+      setServerError("Failed to process image");
+    } finally {
+      setIsImageUploading(false);
+      setCropModal({
+        isOpen: false,
+        field: null,
+        imageSrc: null,
+        originalFile: null,
+      });
     }
   };
 
@@ -174,12 +200,18 @@ const ProfileSettings: React.FC = () => {
               </span>
             </div>
           )}
+          {(isImageUploading || isCropping) && field === cropModal.field && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-white" />
+            </div>
+          )}
         </div>
         <input
           type="file"
           accept="image/*"
           onChange={(e) => handleImagePreview(e, field)}
           className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+          disabled={isImageUploading || isCropping}
         />
       </label>
     </div>
@@ -224,7 +256,7 @@ const ProfileSettings: React.FC = () => {
             <Input
               variant="green-focus"
               {...register("name")}
-              placeholder="John Doe"
+              placeholder={user?.name}
               className="text-sm"
             />
             {errors.name && (
@@ -238,7 +270,7 @@ const ProfileSettings: React.FC = () => {
             <Input
               variant="green-focus"
               {...register("username")}
-              placeholder="johndoe123"
+              placeholder={user?.username}
               className="text-sm"
             />
             {errors.username && (
@@ -283,21 +315,26 @@ const ProfileSettings: React.FC = () => {
             className="px-4 py-1.5 text-sm"
             disabled={isUpdating}
           >
-            {isUpdating ? "Saving..." : "Save Changes"}
+            {isUpdating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Saving...
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </div>
       </form>
 
       <ImageCropper
         isOpen={cropModal.isOpen}
-        onClose={() =>
-          setCropModal({
-            isOpen: false,
-            field: null,
-            imageSrc: null,
-            originalFile: null,
-          })
-        }
+        onClose={() => !isImageUploading && !isCropping && setCropModal({
+          isOpen: false,
+          field: null,
+          imageSrc: null,
+          originalFile: null,
+        })}
         imageSrc={cropModal.imageSrc || ""}
         aspect={
           cropModal.field === "profileImage"
@@ -309,6 +346,7 @@ const ProfileSettings: React.FC = () => {
         cropShape={cropModal.field === "profileImage" ? "round" : "rect"}
         onCropComplete={onCropComplete}
         onSave={handleCropSave}
+        isLoading={isImageUploading || isCropping}
       />
     </div>
   );

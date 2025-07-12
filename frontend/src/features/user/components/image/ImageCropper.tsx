@@ -8,15 +8,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../../components/ui/dialog";
+import { Loader2 } from "lucide-react"; 
 
 type ImageCropperProps = {
   isOpen: boolean;
   onClose: () => void;
   imageSrc: string;
   aspect: number;
-  cropShape: 'round' | 'rect';
-  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void; // Update this line
+  cropShape: "round" | "rect";
+  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void;
   onSave: () => void;
+  isLoading?: boolean;
 };
 
 export const ImageCropper = ({
@@ -27,12 +29,13 @@ export const ImageCropper = ({
   cropShape,
   onCropComplete,
   onSave,
+  isLoading = false, // Add default value
 }: ImageCropperProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={!isLoading ? onClose : undefined}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-sm">Crop Image</DialogTitle>
@@ -65,11 +68,23 @@ export const ImageCropper = ({
           />
         </div>
         <div className="mt-4 flex justify-end gap-3">
-          <Button variant="outline" size="sm" onClick={onClose}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onClose}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
-          <Button variant="main" size="sm" onClick={onSave}>
-            Save
+          <Button 
+            variant="main" 
+            size="sm" 
+            onClick={onSave}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : "Save"}
           </Button>
         </div>
       </DialogContent>
