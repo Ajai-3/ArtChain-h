@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import LikedItems from "../components/settings/LikedItems";
-import { useLogoutMutation } from "../../../api/user/auth/mutations";
 import SalesHistory from "../components/settings/SalesHistory";
 import BlockedUsers from "../components/settings/BlockedUsers";
 import HelpAndSupport from "../components/settings/HelpAndSupport";
-import UserSettingsSideBar from "../components/sidebar/UserSettingsSideBar";
+import { useLogoutMutation } from "../../../api/user/auth/mutations";
 import ProfileSettings from "../components/settings/ProfileSettings";
 import PrivacySettings from "../components/settings/PrivacySettings";
 import PurchaseHistory from "../components/settings/PurchaseHistory";
-import ConfirmLogoutModal from "../../../components/modals/ConfirmLogoutModal";
 import PasswordSettings from "../components/settings/PasswordSettings";
+import UserSettingsSideBar from "../components/sidebar/UserSettingsSideBar";
+import ConfirmLogoutModal from "../../../components/modals/ConfirmLogoutModal";
 import NotificationSettings from "../components/settings/NotificationSettings";
 import SubscriptionSettings from "../components/settings/SubscriptionSettings";
 import EmailPreferencesSettings from "../components/settings/EmailPreferencesSettings";
