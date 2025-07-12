@@ -24,6 +24,7 @@ const Shop = lazy(() => import("../../features/user/pages/Shop"));
 const Wallet = lazy(() => import("../../features/user/pages/Wallet"));
 const Settings = lazy(() => import("../../features/user/pages/Settings"));
 
+const NotFound = lazy(() => import("../../components/NotFound"));
 const UserRoutes = () => (
   <Suspense fallback={<PageFallback />}>
     <Routes>
@@ -45,6 +46,8 @@ const UserRoutes = () => (
         <Route path="wallet" element={<Wallet />} />
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
+
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   </Suspense>

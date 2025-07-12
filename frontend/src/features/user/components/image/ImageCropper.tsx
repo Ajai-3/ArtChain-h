@@ -9,15 +9,15 @@ import {
   DialogTitle,
 } from "../../../../components/ui/dialog";
 
-interface ImageCropperProps {
+type ImageCropperProps = {
   isOpen: boolean;
   onClose: () => void;
   imageSrc: string;
   aspect: number;
-  cropShape: "round" | "rect";
-  onCropComplete: (croppedAreaPixels: any) => void;
+  cropShape: 'round' | 'rect';
+  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void; // Update this line
   onSave: () => void;
-}
+};
 
 export const ImageCropper = ({
   isOpen,

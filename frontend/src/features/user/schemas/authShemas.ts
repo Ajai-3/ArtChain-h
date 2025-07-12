@@ -46,9 +46,29 @@ export const passwordSchema = z.object({
   path: ["confirmPassword"]
 });
 
+export const updateProfileSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Name is too short")
+    .regex(/^[A-Za-z\s]+$/, "Only letters and spaces allowed")
+    .optional(),
+  username: z
+    .string()
+    .min(1, "Username is required")
+    .min(3, "Too short")
+    .regex(/^[a-zA-Z0-9_]+$/, "Use letters, numbers, or _ only")
+    .optional(),
+  country: z.string().optional(),
+  bio: z.string().optional(),
+  profileImage: z.string().optional(),
+  bannerImage: z.string().optional(),
+  backgroundImage: z.string().optional(),
+});
+
 
 
 export type LoginFormInputs = z.infer<typeof LoginSchema>;
 export type SignupFormInputs = z.infer<typeof SignupSchema>;
 export type PasswordFormInput = z.infer<typeof passwordSchema>;
 export type ForgotPasswordFormInputs = z.infer<typeof ForgotPasswordSchema>;
+export type UpdateProfileFormInputs = z.infer<typeof updateProfileSchema>;

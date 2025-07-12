@@ -25,8 +25,8 @@ const userSlice = createSlice({
     setAccessToken: (state, action: { payload: string }) => {
       state.accessToken = action.payload;
     },
-    updateProfile: (state, action: { payload: User }) => {
-      
+    updateProfile: (state, action: { payload: { user: User } }) => {
+      state.user = action.payload.user;
     },
     logout: (state) => {
       state.user = null;

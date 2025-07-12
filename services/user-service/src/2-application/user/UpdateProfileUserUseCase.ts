@@ -1,12 +1,12 @@
 import { User } from "../../1-domine/entities/User";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
-import { ConflictError, NotFoundError, UnauthorizedError } from "../../errors";
+import { ConflictError, NotFoundError } from "../../errors";
 
 export class UpdateProfileUserUseCase {
   constructor(private userRepo: IUserRepository) {}
 
-  async execute( username: string,
+  async execute( userId: string,
     updateData: {
       name?: string;
       username?: string;
@@ -17,7 +17,7 @@ export class UpdateProfileUserUseCase {
       bio?: string;
     }
   ): Promise<User> {
-    const user = await this.userRepo.findOneByUsername(username);
+    const user = await this.userRepo.findOneById(userId);
     if (!user) {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }

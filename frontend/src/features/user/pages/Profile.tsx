@@ -1,8 +1,9 @@
 import { useSelector } from 'react-redux';
+import type { User } from '../../../types/user';
 import type { RootState } from '../../../redux/store';
 
 const Profile = () => {
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user } = useSelector((state: RootState) => state.user) as { user: User | null } ;
 
   if (!user) {
     return <div className="flex justify-center items-center h-[calc(100vh-62px)] overflow-auto">Loading profile...</div>;
@@ -17,14 +18,14 @@ const Profile = () => {
           <div className="w-16 h-16 rounded-full border-2 border-white dark:border-gray-800 overflow-hidden">
             {user?.profileImage ? (
               <img 
-                src={user.profileImage} 
+                src={user?.profileImage} 
                 alt="Profile" 
                 className="w-full h-full object-cover"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center">
                 <span className="text-xl font-bold text-white">
-                  {user.name.charAt(0).toUpperCase()}
+                  {user?.name?.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
@@ -32,8 +33,8 @@ const Profile = () => {
 
           {/* Profile Info */}
           <div className="flex-1">
-            <h1 className="font-bold text-lg dark:text-white">{user.name}</h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">@{user.username}</p>
+            <h1 className="font-bold text-lg dark:text-white">{user?.name}</h1>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">@{user?.username}</p>
           </div>
         </div>
 
@@ -54,8 +55,8 @@ const Profile = () => {
         </div>
 
         {/* Bio */}
-        {user.bio && (
-          <p className="text-sm dark:text-white mb-3">{user.bio}</p>
+        {user?.bio && (
+          <p className="text-sm dark:text-white mb-3">{user?.bio}</p>
         )}
 
         {/* Edit Profile Button */}

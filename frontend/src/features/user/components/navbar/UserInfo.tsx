@@ -8,7 +8,10 @@ import { Button } from "../../../../components/ui/button";
 const UserInfo: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
-  const isLoggedIn = !!user;
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
+  const isLoggedIn = isAuthenticated === true && user !== null;
 
   return (
     <div className="flex items-center gap-3">
@@ -31,14 +34,16 @@ const UserInfo: React.FC = () => {
           >
             {user?.profileImage ? (
               <img
-                src={user.profileImage}
-                alt={`${user.name}'s profile`}
+                src={user?.profileImage}
+                alt={`${user?.name}'s profile`}
                 className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-600 object-cover"
               />
             ) : (
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-white">
                 <span className="text-lg font-medium">
-                  {user?.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
+                  {user?.name?.charAt(0).toUpperCase() || (
+                    <User className="w-4 h-4" />
+                  )}
                 </span>
               </div>
             )}
