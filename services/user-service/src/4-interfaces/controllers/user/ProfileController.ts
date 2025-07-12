@@ -47,7 +47,6 @@ export const updateProfile = async (
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
-    console.log(req.body)
 
     const result = updateUserSchema.safeParse(req.body);
 
@@ -65,7 +64,6 @@ export const updateProfile = async (
 
     const user = await updateProfileUserUseCase.execute(userId, result.data);
 
-    console.log(user)
     return res
       .status(HttpStatus.OK)
       .json({ message: pPROFILE_MESSAGES.PROFILE_UPDATED, user });
