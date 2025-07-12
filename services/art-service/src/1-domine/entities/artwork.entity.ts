@@ -1,3 +1,4 @@
+// domain/entities/artwork.entity.ts
 export class Artwork {
   constructor(
     public _id: string,
@@ -16,4 +17,15 @@ export class Artwork {
     public createdAt: Date = new Date(),
     public updatedAt: Date = new Date()
   ) {}
+
+  // Business methods
+  public markAsNSFW(): void {
+    this.nsfw = true;
+    this.updatedAt = new Date();
+  }
+
+  public incrementSoldCopies(): void {
+    this.soldCopies++;
+    this.updatedAt = new Date();
+  }
 }
