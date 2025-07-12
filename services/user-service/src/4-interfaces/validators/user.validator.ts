@@ -118,6 +118,7 @@ export const updateUserSchema = z.object({
     .min(3, "Username too short")
     .max(20, "Username too long")
     .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, underscores allowed")
+    .transform((val) => val.toLowerCase())
     .optional(),
 
   bio: z
