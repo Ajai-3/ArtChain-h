@@ -1,24 +1,11 @@
-import { Artwork } from "../../1-domine/entities/artwork.entity";
+import { Artwork, ArtworkInput } from "../../1-domine/entities/artwork.entity";
 import { IArtworkRepository } from "../../1-domine/repositories/artwork.repository";
 
-export class CreateArtwork {
+export class CreateArtworkUseCase {
   constructor(private readonly repository: IArtworkRepository) {}
 
-  async execute(input: unknown): Promise<Artwork> {
-    
-    const artwork = new Artwork(
-      crypto.randomUUID(),
-      validated.userId,
-      validated.title,
-      validated.description,
-      validated.tags || [],
-      validated.images,
-      validated.nsfw || false,
-      validated.price !== undefined,
-      validated.artType || 'digital',
-      validated.price || 0
-    );
-
+  async execute(input: ArtworkInput): Promise<Artwork> {
+    const artwork = Artwork.create(input);
     return this.repository.create(artwork);
   }
 }

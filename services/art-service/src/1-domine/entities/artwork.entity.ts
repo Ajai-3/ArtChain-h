@@ -1,7 +1,8 @@
-// domain/entities/artwork.entity.ts
+import { ObjectId } from 'mongodb';
+
 export class Artwork {
   constructor(
-    public _id: string,
+    public _id: ObjectId,
     public userId: string,
     public title: string,
     public description: string = '',
@@ -18,14 +19,35 @@ export class Artwork {
     public updatedAt: Date = new Date()
   ) {}
 
-  // Business methods
-  public markAsNSFW(): void {
-    this.nsfw = true;
-    this.updatedAt = new Date();
+  static create(input: ArtworkInput): Artwork {
+    return new Artwork(
+      new ObjectId(),
+      input.userId,
+      input.title,
+      input.description,
+      input.tags,
+      input.images,
+      input.nsfw,
+      input.isCollectible,
+      input.artType,
+      input.price,
+      0, 
+      input.downloadAccess,
+      input.isCommentEnabled
+    );
   }
+}
 
-  public incrementSoldCopies(): void {
-    this.soldCopies++;
-    this.updatedAt = new Date();
-  }
+export interface ArtworkInput {
+  userId: string;
+  title: string;
+  description?: string;
+  tags?: string[];
+  images: string[];
+  nsfw?: boolean;
+  isCollectible?: boolean;
+  artType?: string;
+  price?: number;
+  downloadAccess?: boolean;
+  isCommentEnabled?: boolean;
 }

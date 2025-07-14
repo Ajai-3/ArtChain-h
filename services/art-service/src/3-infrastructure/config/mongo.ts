@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { config } from './env'; 
 
-export const connectToDatabase = async () => {
+export const connectDB  = async () => {
   try {
     await mongoose.connect(config.database_url!);
     console.log('Connected to MongoDB Atlas');
