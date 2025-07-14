@@ -31,12 +31,12 @@ export const useLoginMutation = () => {
 };
 
 // Mutation for logging with google
-export const useGoogleLoginMutation = () => {
+export const useGoogleAuthMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string, email: string, name: string }) =>
-      apiClient.post("/api/v1/users/google-login", credentials),
+      apiClient.post("/api/v1/users/google-auth", credentials),
     onSuccess: (data: any) => {
         const { user, accessToken } = data;
       

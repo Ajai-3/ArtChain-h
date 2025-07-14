@@ -11,8 +11,8 @@ import {
 } from "../../schemas/authShemas";
 import {
   useForgottPasswordMutation,
-  useGoogleLoginMutation,
   useLoginMutation,
+  useGoogleAuthMutation,
   useSignupMutation,
 } from "../../../../api/user/auth/mutations";
 import { Eye, EyeOff, Mail, Loader2 } from "lucide-react";
@@ -76,7 +76,7 @@ const Auth: React.FC = () => {
   
   // Mutations
   const { mutate: loginMutation, isPending: isLoggingIn } = useLoginMutation();
-  const { mutate: googleLoginMutation } = useGoogleLoginMutation();
+  const { mutate: googleAuthMutation } = useGoogleAuthMutation();
   const { mutate: signupMutation, isPending: isSigningUp } =
   useSignupMutation();
   const { mutate: forgotMutation } = useForgottPasswordMutation();
@@ -88,7 +88,7 @@ const Auth: React.FC = () => {
    try {
      const { token, email, name } = await signInWithGoogle();
      
-     googleLoginMutation({ 
+     googleAuthMutation({ 
        token,
        email,
        name
