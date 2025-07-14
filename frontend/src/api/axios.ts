@@ -100,6 +100,8 @@ apiClient.interceptors.response.use(
           store.dispatch(setAccessToken(newToken));
         }
 
+        console.log(newToken)
+
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         refreshRetryCount = 0;
         return apiClient(originalRequest);

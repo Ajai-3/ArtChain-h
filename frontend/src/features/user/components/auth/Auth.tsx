@@ -11,6 +11,7 @@ import {
 } from "../../schemas/authShemas";
 import {
   useForgottPasswordMutation,
+  useGoogleLoginMutation,
   useLoginMutation,
   useSignupMutation,
 } from "../../../../api/user/auth/mutations";
@@ -23,6 +24,7 @@ import {
 } from "../../../../components/ui/tabs";
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
+import { signInWithGoogle } from "../../../../firebase/config";
 
 const Auth: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -71,15 +73,30 @@ const Auth: React.FC = () => {
     resolver: zodResolver(ForgotPasswordSchema),
   });
 
+  
   // Mutations
   const { mutate: loginMutation, isPending: isLoggingIn } = useLoginMutation();
+  const { mutate: googleLoginMutation } = useGoogleLoginMutation();
   const { mutate: signupMutation, isPending: isSigningUp } =
-    useSignupMutation();
+  useSignupMutation();
   const { mutate: forgotMutation } = useForgottPasswordMutation();
-
+  
   const handleLogin = (data: LoginFormInputs) => {
     loginMutation(data);
   };
+  const handleGoogleLogin = async () => {
+   try {
+     const { email, name } = await signInWithGoogle();
+     
+     googleLoginMutation({ 
+       email,
+       name
+     });
+     
+   } catch (error) {
+     console.error("Google login failed:", error);
+   }
+ };
 
   const handleSignup = (data: SignupFormInputs) => {
     signupMutation(data);
@@ -184,6 +201,7 @@ const Auth: React.FC = () => {
                     variant="outline"
                     type="button"
                     className="w-full flex items-center gap-2 justify-center"
+                    onClick={handleGoogleLogin}
                   >
                     <Mail className="w-4 h-4" />
                     Continue with Google
@@ -262,6 +280,7 @@ const Auth: React.FC = () => {
                     variant="outline"
                     type="button"
                     className="w-full flex items-center gap-2 justify-center"
+                         onClick={handleGoogleLogin}
                   >
                     <Mail className="w-4 h-4" />
                     Continue with Google

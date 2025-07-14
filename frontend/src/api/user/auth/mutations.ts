@@ -30,6 +30,30 @@ export const useLoginMutation = () => {
   });
 };
 
+// Mutation for logging with google
+export const useGoogleLoginMutation = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: (credentials: { email: string, name: string }) =>
+      apiClient.post("/api/v1/users/google-login", credentials),
+    onSuccess: (data: any) => {
+        const { user, accessToken } = data;
+      
+      dispatch(setUser({
+        user,
+        accessToken
+      }));
+
+      navigate('/');
+    },
+    onError: (error: any) => {
+
+      console.error("Login failed:", error);
+    },
+  });
+}
+
 // Mutation for signing up a new user
 export const useSignupMutation = () => {
   return useMutation({
