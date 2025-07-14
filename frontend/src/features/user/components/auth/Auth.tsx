@@ -86,9 +86,10 @@ const Auth: React.FC = () => {
   };
   const handleGoogleLogin = async () => {
    try {
-     const { email, name } = await signInWithGoogle();
+     const { token, email, name } = await signInWithGoogle();
      
      googleLoginMutation({ 
+       token,
        email,
        name
      });
@@ -106,7 +107,7 @@ const Auth: React.FC = () => {
     forgotMutation(data);
     setIsResetDisabled(true);
     console.log("Forgot password:", data.identifier);
-    // Add your API call here if needed
+  
   };
 
   return (

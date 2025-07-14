@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -15,13 +15,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Add this function
+
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
+    const token = await result.user.getIdToken(); 
+    
     return {
+      token,
       email: result.user.email || '',
-      name: result.user.displayName || result.user.email?.split('@')[0] || 'User'
+      name: result.user.displayName || result.user.email?.split('@')[0] || 'User',
+      uid: result.user.uid 
     };
   } catch (error) {
     console.error("Google sign-in error:", error);

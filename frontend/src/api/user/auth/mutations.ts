@@ -35,7 +35,7 @@ export const useGoogleLoginMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (credentials: { email: string, name: string }) =>
+    mutationFn: (credentials: { token: string, email: string, name: string }) =>
       apiClient.post("/api/v1/users/google-login", credentials),
     onSuccess: (data: any) => {
         const { user, accessToken } = data;
