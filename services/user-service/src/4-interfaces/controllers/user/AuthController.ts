@@ -1,3 +1,4 @@
+import admin from "../../../3-infrastructure/config/firebase-admin"
 import { Request, Response, NextFunction } from "express";
 import { TokenService } from "../../services/TokenService";
 import {
@@ -14,15 +15,17 @@ import { AUTH_MESSAGES } from "../../../constants/authMessages";
 import { ERROR_MESSAGES } from "../../../constants/errorMessages";
 import { publishToQueue } from "../../../3-infrastructure/utils/rabbit";
 import { LoginUserUseCase } from "../../../2-application/user/LoginUserUseCase";
+import { GoogleAuthUseCase } from '../../../2-application/user/GoogleAuthUseCase';
 import { RegisterUserUseCase } from "../../../2-application/user/RegisterUserUseCase";
 import { ResetPasswordUseCase } from "../../../2-application/user/ResetPasswordUseCase";
 import { StartRegisterUseCase } from "./../../../2-application/user/StartRegisterUseCase";
 import { ForgotPasswordUseCase } from "../../../2-application/user/ForgotPasswordUseCase";
-import { UserRepositoryImpl } from "../../../3-infrastructure/repositories/user/UserRepositoryImpl";
 import { ChangePasswordUseCase } from "../../../2-application/user/ChangePasswordUseCase";
+import { UserRepositoryImpl } from "../../../3-infrastructure/repositories/user/UserRepositoryImpl";
 
 const repo = new UserRepositoryImpl();
 const loginUserUseCase = new LoginUserUseCase(repo);
+const googleAuthUseCase = new GoogleAuthUseCase(repo);
 const registerUserUseCase = new RegisterUserUseCase(repo);
 const resetPasswordUseCase = new ResetPasswordUseCase(repo);
 const startRegisterUseCase = new StartRegisterUseCase(repo);
@@ -206,6 +209,62 @@ export const loginUser = async (
       user,
       accessToken,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//#==================================================================================================================
+//# GOOGLE LOGIN USER
+//#==================================================================================================================
+//# POST /api/v1/users/google-login
+//# Request body: { token: string }
+//# This controller logs in a user using their Google account.
+//#==================================================================================================================
+export const googleAuthUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const { token, email, name } = req.body;
+
+    console.log(req.body)
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    if (!decodedToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ 
+        error: AUTH_MESSAGES.INVALID_VERIFICATION_TOKEN 
+      });
+    }
+
+    const { user, isNewUser } = await googleAuthUseCase.execute(email, name);
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const refreshToken = TokenService.generateRefreshToken(payload);
+    const accessToken = TokenService.generateAccessToken(payload);
+
+    res.cookie("userRefreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    
+    return res.status(isNewUser ? HttpStatus.CREATED : HttpStatus.OK).json({
+      message: isNewUser 
+        ? AUTH_MESSAGES.REGISTRATION_SUCCESS 
+        : AUTH_MESSAGES.LOGIN_SUCCESS,
+      user,
+      accessToken
+    });
+
   } catch (error) {
     next(error);
   }
