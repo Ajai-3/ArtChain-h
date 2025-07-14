@@ -7,8 +7,8 @@ import { Textarea } from "../../../../components/ui/textarea";
 import { ImageCropper } from "../image/ImageCropper";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { UpdateProfileFormInputs } from "../../schemas/authShemas";
-import { updateProfileSchema } from "../../schemas/authShemas";
+import type { UpdateProfileFormInputs } from "../../schemas/authSchemas";
+import { updateProfileSchema } from "../../schemas/authSchemas";
 import { useUpdateProfileMutation } from "../../../../api/user/profile/mutations";
 import { uploadToFolder } from "../../../../utils/cloudinary";
 import { Loader2 } from "lucide-react";
@@ -22,7 +22,8 @@ interface CropArea {
 
 const ProfileSettings: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
-  const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfileMutation();
+  const { mutate: updateProfile, isPending: isUpdating } =
+    useUpdateProfileMutation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isImageUploading, setIsImageUploading] = useState(false);
   const [isCropping, setIsCropping] = useState(false);
@@ -55,7 +56,9 @@ const ProfileSettings: React.FC = () => {
     originalFile: null as File | null,
   });
 
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(
+    null
+  );
 
   const handleImagePreview = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -84,7 +87,10 @@ const ProfileSettings: React.FC = () => {
     []
   );
 
-  const getCroppedImg = async (imageSrc: string, pixelCrop: CropArea): Promise<Blob> => {
+  const getCroppedImg = async (
+    imageSrc: string,
+    pixelCrop: CropArea
+  ): Promise<Blob> => {
     setIsCropping(true);
     try {
       const image = new Image();
@@ -127,13 +133,21 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleCropSave = async () => {
-    if (!cropModal.imageSrc || !cropModal.field || !croppedAreaPixels || !cropModal.originalFile) {
+    if (
+      !cropModal.imageSrc ||
+      !cropModal.field ||
+      !croppedAreaPixels ||
+      !cropModal.originalFile
+    ) {
       return;
     }
 
     try {
       setIsImageUploading(true);
-      const croppedBlob = await getCroppedImg(cropModal.imageSrc, croppedAreaPixels);
+      const croppedBlob = await getCroppedImg(
+        cropModal.imageSrc,
+        croppedAreaPixels
+      );
       const previewUrl = URL.createObjectURL(croppedBlob);
       setValue(cropModal.field, previewUrl);
 
@@ -244,7 +258,11 @@ const ProfileSettings: React.FC = () => {
           <ImageBox label="Profile" field="profileImage" isCircle aspect={1} />
           <div className="md:col-span-2 space-y-4">
             <ImageBox label="Banner" field="bannerImage" aspect={3 / 1} />
-            <ImageBox label="Background" field="backgroundImage" aspect={3 / 2} />
+            <ImageBox
+              label="Background"
+              field="backgroundImage"
+              aspect={3 / 2}
+            />
           </div>
         </div>
 
@@ -274,7 +292,9 @@ const ProfileSettings: React.FC = () => {
               className="text-sm"
             />
             {errors.username && (
-              <p className="text-sm text-red-500 mt-1">{errors.username.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.username.message}
+              </p>
             )}
           </div>
           <div className="md:col-span-2">
@@ -303,7 +323,9 @@ const ProfileSettings: React.FC = () => {
               className="text-sm"
             />
             {errors.country && (
-              <p className="text-sm text-red-500 mt-1">{errors.country.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.country.message}
+              </p>
             )}
           </div>
         </div>
@@ -329,12 +351,16 @@ const ProfileSettings: React.FC = () => {
 
       <ImageCropper
         isOpen={cropModal.isOpen}
-        onClose={() => !isImageUploading && !isCropping && setCropModal({
-          isOpen: false,
-          field: null,
-          imageSrc: null,
-          originalFile: null,
-        })}
+        onClose={() =>
+          !isImageUploading &&
+          !isCropping &&
+          setCropModal({
+            isOpen: false,
+            field: null,
+            imageSrc: null,
+            originalFile: null,
+          })
+        }
         imageSrc={cropModal.imageSrc || ""}
         aspect={
           cropModal.field === "profileImage"

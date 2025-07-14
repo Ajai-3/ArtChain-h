@@ -69,8 +69,17 @@ export const updateProfileSchema = z.object({
   backgroundImage: z.string().optional(),
 });
 
+export const phoneFormSchema = z.object({
+  phoneNumber: z
+    .string()
+    .min(10, "Phone number must be at least 10 digits")
+    .max(15, "Phone number too long")
+    .regex(/^\+?[0-9]+$/, "Only numbers and + prefix allowed")
+});
+
 export type LoginFormInputs = z.infer<typeof LoginSchema>;
 export type SignupFormInputs = z.infer<typeof SignupSchema>;
+export type PhoneFormInputs = z.infer<typeof phoneFormSchema>;
 export type PasswordFormInput = z.infer<typeof passwordSchema>;
 export type ForgotPasswordFormInputs = z.infer<typeof ForgotPasswordSchema>;
 export type UpdateProfileFormInputs = z.infer<typeof updateProfileSchema>;

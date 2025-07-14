@@ -8,7 +8,7 @@ import {
   type LoginFormInputs,
   type SignupFormInputs,
   type ForgotPasswordFormInputs,
-} from "../../schemas/authShemas";
+} from "../../schemas/authSchemas";
 import {
   useForgottPasswordMutation,
   useLoginMutation,
@@ -73,31 +73,29 @@ const Auth: React.FC = () => {
     resolver: zodResolver(ForgotPasswordSchema),
   });
 
-  
   // Mutations
   const { mutate: loginMutation, isPending: isLoggingIn } = useLoginMutation();
   const { mutate: googleAuthMutation } = useGoogleAuthMutation();
   const { mutate: signupMutation, isPending: isSigningUp } =
-  useSignupMutation();
+    useSignupMutation();
   const { mutate: forgotMutation } = useForgottPasswordMutation();
-  
+
   const handleLogin = (data: LoginFormInputs) => {
     loginMutation(data);
   };
   const handleGoogleLogin = async () => {
-   try {
-     const { token, email, name } = await signInWithGoogle();
-     
-     googleAuthMutation({ 
-       token,
-       email,
-       name
-     });
-     
-   } catch (error) {
-     console.error("Google login failed:", error);
-   }
- };
+    try {
+      const { token, email, name } = await signInWithGoogle();
+
+      googleAuthMutation({
+        token,
+        email,
+        name,
+      });
+    } catch (error) {
+      console.error("Google login failed:", error);
+    }
+  };
 
   const handleSignup = (data: SignupFormInputs) => {
     signupMutation(data);
@@ -107,7 +105,6 @@ const Auth: React.FC = () => {
     forgotMutation(data);
     setIsResetDisabled(true);
     console.log("Forgot password:", data.identifier);
-  
   };
 
   return (
@@ -281,7 +278,7 @@ const Auth: React.FC = () => {
                     variant="outline"
                     type="button"
                     className="w-full flex items-center gap-2 justify-center"
-                         onClick={handleGoogleLogin}
+                    onClick={handleGoogleLogin}
                   >
                     <Mail className="w-4 h-4" />
                     Continue with Google

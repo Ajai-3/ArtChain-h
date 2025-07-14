@@ -4,9 +4,9 @@ import { Eye, EyeOff } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../../components/ui/input";
-import { passwordSchema } from "../../schemas/authShemas";
+import { passwordSchema } from "../../schemas/authSchemas";
 import { Button } from "../../../../components/ui/button";
-import { type PasswordFormInput } from "../../schemas/authShemas";
+import { type PasswordFormInput } from "../../schemas/authSchemas";
 import { useSignupverificationMutation } from "../../../../api/user/auth/mutations";
 
 const SignupPassword: React.FC = () => {
@@ -40,7 +40,7 @@ const SignupPassword: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   return (
-     <div className="flex-col h-screen flex items-center justify-center bg-background text-foreground px-4">
+    <div className="flex-col h-screen flex items-center justify-center bg-background text-foreground px-4">
       <div className="w-[500px] max-w-md bg-card p-8 rounded-2xl shadow-xl border dark:border-zinc-800">
         <div className="mb-6 text-center space-y-2">
           <h2 className="text-2xl font-bold">Set New Password</h2>

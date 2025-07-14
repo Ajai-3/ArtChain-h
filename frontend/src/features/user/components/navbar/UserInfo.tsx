@@ -1,77 +1,64 @@
-import React from "react";
 import { Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { Button } from "../../../../components/ui/button";
 
-const UserInfo: React.FC = () => {
+type UserInfoProps = {
+  onBecomeArtist: () => void;
+};
+
+const UserInfo = ({ onBecomeArtist }: UserInfoProps) => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
-  const isLoggedIn = isAuthenticated === true && user !== null;
 
   return (
     <div className="flex items-center gap-3">
-      {isLoggedIn ? (
+      {isAuthenticated && user ? (
         <>
-          {/* Notifications Button */}
           <button
             onClick={() => navigate("/notifications")}
-            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
             aria-label="Notifications"
           >
-            <Bell className="w-5 h-5 text-zinc-800 dark:text-zinc-200 hover:text-main-color" />
+            <Bell className="w-5 h-5" />
           </button>
 
-          {/* Profile Button */}
           <button
             onClick={() => navigate("/profile")}
-            className="p-0 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
             aria-label="Profile"
           >
-            {user?.profileImage ? (
+            {user.profileImage ? (
               <img
-                src={user?.profileImage}
-                alt={`${user?.name}'s profile`}
-                className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-600 object-cover"
+                src={user.profileImage}
+                alt="Profile"
+                className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-600"
               />
             ) : (
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-white">
-                <span className="text-lg font-medium">
-                  {user?.name?.charAt(0).toUpperCase() || (
-                    <User className="w-4 h-4" />
-                  )}
-                </span>
+                {user.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
               </div>
             )}
           </button>
 
-          {/* Become Creator Button */}
-          <Button
-            variant="main"
-            className="hidden sm:flex bg-main-color hover:bg-main-color/90 text-white dark:text-white h-9 px-3 rounded-md text-sm font-medium"
-            onClick={() => navigate("/become-creator")}
+          <Button 
+            variant="main" 
+            className="hidden sm:flex"
+            onClick={onBecomeArtist}
           >
-            Become Creator
+            Become an Artist
           </Button>
         </>
       ) : (
         <>
-          <Button
-            variant="transparant"
-            className="text-zinc-800 dark:text-zinc-200 hover:text-main-color h-9 px-3 rounded-md text-sm font-medium"
-            onClick={() => navigate("/login")}
-          >
+          <Button variant="ghost" onClick={() => navigate("/login")}>
             Log in
           </Button>
-          <Button
-            variant="main"
-            className="bg-main-color hover:bg-main-color/90 text-white dark:text-white h-9 px-3 rounded-md text-sm font-medium"
-            onClick={() => navigate("/signup")}
-          >
+          <Button variant="main" onClick={() => navigate("/signup")}>
             Sign up
           </Button>
         </>

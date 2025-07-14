@@ -138,6 +138,19 @@ export const changePasswordMutation = () => {
   });
 };
 
+// Mutation for reqest to become an artist
+export const useBecomeArtistMutation = () => {
+  return useMutation({
+    mutationFn: (credentials: {  }) => apiClient.post("/api/v1/users/become-artist"),
+    onSuccess: (data) => {
+      console.log("Artist request sent:", data);
+    },
+    onError: (error) => {
+      console.error("Artist request failed:", error);
+    },
+  })
+}
+
 // Mutation for logging out a user
 export const useLogoutMutation = () => {
   const dispatch = useDispatch();

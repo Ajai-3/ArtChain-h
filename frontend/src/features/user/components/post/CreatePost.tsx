@@ -1,5 +1,6 @@
-import React from 'react';
-import { Button } from '../../../../components/ui/button';
+import React from "react";
+import ImageUploadSection from "./ImageUploadSection";
+import PostDetailsForm from "./PostDetailsForm";
 
 type Props = {
   isOpen: boolean;
@@ -8,27 +9,20 @@ type Props = {
 };
 
 const CreatePost: React.FC<Props> = ({ isOpen, onClose, onConfirm }) => {
+  const [step, setStep] = React.useState(1);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-secondary-color p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Confirm Logout</h2>
-        <p className="text-zinc-600 dark:text-zinc-300 mb-6">Are you sure you want to logout?</p>
-        <div className="flex justify-end gap-4">
-          <Button
-            onClick={onClose}
-            className="px-4 py-2 rounded-md bg-zinc-300 dark:bg-zinc-600 text-black dark:text-white hover:bg-zinc-400 dark:hover:bg-zinc-500"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={onConfirm}
-            className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-          >
-            Logout
-          </Button>
-        </div>
+      <div className="flex h-[650px] bg-white dark:bg-secondary-color w-3/5 max-w-5xl border border-zinc-400 dark:border-zinc-700 rounded-lg overflow-hidden">
+        <ImageUploadSection onClose={onClose} />
+        <PostDetailsForm
+          onClose={onClose}
+          onConfirm={onConfirm}
+          setStep={setStep}
+          step={step}
+        />
       </div>
     </div>
   );

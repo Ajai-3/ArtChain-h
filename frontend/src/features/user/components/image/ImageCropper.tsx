@@ -29,7 +29,7 @@ export const ImageCropper = ({
   cropShape,
   onCropComplete,
   onSave,
-  isLoading = false, // Add default value
+  isLoading = false,
 }: ImageCropperProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);

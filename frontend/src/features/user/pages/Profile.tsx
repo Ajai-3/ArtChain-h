@@ -22,17 +22,16 @@ const Profile: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col h-[calc(100vh-62px)]">
-      {/* Scrollable Area */}
+
       <div className="flex-1 overflow-y-auto scrollbar relative">
-        {/* Non-sticky part (ProfileTopBar) */}
+
         <ProfileTopBar user={user} />
         
-        {/* Sticky tab bar - increased z-index */}
+
         <div className="sticky top-0 z-20 bg-white dark:bg-secondary-color">
           <ProfileSelectBar activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
         
-        {/* Content area */}
         
         <ProfileContent activeTab={activeTab} user={user} />
       </div>

@@ -1,7 +1,7 @@
-import { User } from "../../1-domine/entities/User";
-import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
-import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import { ForbiddenError } from "../../errors";
+import { User } from "../../1-domine/entities/User";
+import { ERROR_MESSAGES } from "../../constants/errorMessages";
+import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
 
 export class GoogleAuthUseCase {
   constructor(private readonly userRepo: IUserRepository) {}

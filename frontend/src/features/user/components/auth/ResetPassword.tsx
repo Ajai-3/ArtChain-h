@@ -9,7 +9,7 @@ import { useResetPasswordMutation } from "../../../../api/user/auth/mutations";
 import {
   passwordSchema,
   type PasswordFormInput,
-} from "../../schemas/authShemas";
+} from "../../schemas/authSchemas";
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
