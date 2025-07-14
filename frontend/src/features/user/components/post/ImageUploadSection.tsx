@@ -23,7 +23,7 @@ const ImageUploadSection: React.FC = () => {
   const handleUploadComplete = (url: string) => {
     setImages((prev) => {
       const updated = [...prev, url];
-      if (updated.length === 1) setMainImageIndex(0); // Show as main if it's first image
+      if (updated.length === 1) setMainImageIndex(0);
       return updated;
     });
     setTempImage(null);
@@ -34,7 +34,7 @@ const ImageUploadSection: React.FC = () => {
     setImages(updated);
 
     if (index === mainImageIndex) {
-      setMainImageIndex(0); // Reset main image if the one removed was active
+      setMainImageIndex(0);
     } else if (index < mainImageIndex) {
       setMainImageIndex((prev) => prev - 1);
     }
@@ -44,45 +44,47 @@ const ImageUploadSection: React.FC = () => {
     <div className="p-6 w-full md:w-1/2 text-white border-r border-zinc-400 dark:border-zinc-700">
       <h2 className="text-lg font-semibold mb-4">Upload Images</h2>
 
-      {images.length > 0 && (
-        <div className="mb-4">
-          <img
-            src={images[mainImageIndex]}
-            alt="Main Preview"
-            className="w-full h-64 object-contain rounded border"
-          />
-        </div>
-      )}
-
-      <div className="flex gap-2 mb-4 flex-wrap">
-        {images.map((url, idx) => (
-          <div key={idx} className="relative">
+      <div className="flex flex-col justify-center items-center">
+        {images.length > 0 && (
+          <div className="mb-8">
             <img
-              src={url}
-              onClick={() => setMainImageIndex(idx)}
-              className={`w-16 h-16 object-cover border rounded cursor-pointer ${
-                idx === mainImageIndex ? "ring-2 ring-blue-500" : ""
-              }`}
-              alt={`Uploaded ${idx}`}
+              src={images[mainImageIndex]}
+              alt="Main Preview"
+              className="w-full h-96 object-contain rounded border"
             />
-            <button
-              onClick={() => removeImage(idx)}
-              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 text-xs"
-            >
-              ×
-            </button>
           </div>
-        ))}
-
-        {images.length < 3 && (
-          <Button
-            variant="outline"
-            className="w-16 h-16 flex items-center justify-center"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Plus className="h-5 w-5 text-gray-400" />
-          </Button>
         )}
+
+        <div className="flex gap-2 mb-4 flex-wrap">
+          {images.map((url, idx) => (
+            <div key={idx} className="relative">
+              <img
+                src={url}
+                onClick={() => setMainImageIndex(idx)}
+                className={`w-16 h-16 object-cover border rounded cursor-pointer ${
+                  idx === mainImageIndex ? "ring-2 ring-main-color" : ""
+                }`}
+                alt={`Uploaded ${idx}`}
+              />
+              <button
+                onClick={() => removeImage(idx)}
+                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 text-xs"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          {images.length < 3 && (
+            <Button
+              variant="outline"
+              className="w-16 h-16 flex items-center justify-center"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Plus className="h-16 w-16 text-gray-400" />
+            </Button>
+          )}
+        </div>
       </div>
 
       <input
@@ -105,4 +107,3 @@ const ImageUploadSection: React.FC = () => {
 };
 
 export default ImageUploadSection;
- 
