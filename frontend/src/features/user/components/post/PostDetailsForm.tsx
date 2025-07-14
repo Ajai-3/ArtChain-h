@@ -26,7 +26,6 @@ type PostDetailsFormProps = {
 
 const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
   onConfirm,
-  onClose,
   setStep,
   step,
 }) => {
@@ -90,7 +89,7 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
             <Textarea
               variant="green-focus"
               placeholder="Enter description for your art work"
-              className="w-full min-h-[190px]"
+              className="w-full min-h-[180px]"
             />
           </div>
 
