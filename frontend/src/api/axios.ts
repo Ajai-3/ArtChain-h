@@ -52,6 +52,11 @@ apiClient.interceptors.request.use((config) => {
     return config;
   }
 });
+const AUTH_ENDPOINTS = [
+  '/api/v1/users/login',
+  '/api/v1/users/signup',
+  '/api/v1/admin/login',
+];
 
 apiClient.interceptors.response.use(
   (response) => response.data,
@@ -73,11 +78,17 @@ apiClient.interceptors.response.use(
 
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && 
-        !originalRequest._retry && 
-        !originalRequest._noRetry &&
-        refreshRetryCount < MAX_REFRESH_RETRIES) {
-      
+    const isAuthEndpoint = AUTH_ENDPOINTS.some((url) =>
+      originalRequest.url?.startsWith(url)
+    );
+
+    if (
+      error.response.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest._noRetry &&
+      refreshRetryCount < MAX_REFRESH_RETRIES &&
+      !isAuthEndpoint
+    ) {
       originalRequest._retry = true;
       refreshRetryCount++;
 
@@ -100,10 +111,9 @@ apiClient.interceptors.response.use(
           store.dispatch(setAccessToken(newToken));
         }
 
-        console.log(newToken)
-
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         refreshRetryCount = 0;
+
         return apiClient(originalRequest);
       } catch (refreshError) {
         if (refreshRetryCount >= MAX_REFRESH_RETRIES) {
@@ -115,7 +125,7 @@ apiClient.interceptors.response.use(
           status: 401,
           message: refreshRetryCount >= MAX_REFRESH_RETRIES
             ? "Session expired. Please log in again."
-            : "Refreshing session...",
+            : "Refreshing session failed.",
           fullError: refreshError
         });
       }
@@ -128,5 +138,6 @@ apiClient.interceptors.response.use(
     });
   }
 );
+
 
 export default apiClient;

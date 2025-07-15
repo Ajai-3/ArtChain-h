@@ -1,17 +1,33 @@
-import React, { useRef, useState } from "react";
-import { Button } from "../../../../components/ui/button";
 import { Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import React, { useRef, useState } from "react";
 import ImageCropModal from "../image/ImageCropModal";
+import { Button } from "../../../../components/ui/button";
 
-const ImageUploadSection: React.FC = () => {
-  const [images, setImages] = useState<string[]>([]);
+interface ImageUploadSectionProps {
+  images: string[];
+  setImages: React.Dispatch<React.SetStateAction<string[]>>;
+   onClose: () => void;
+}
+
+const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({ 
+  images, 
+  setImages,
+  onClose 
+}) => {
   const [mainImageIndex, setMainImageIndex] = useState<number>(0);
   const [tempImage, setTempImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  console.log(images)
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || images.length >= 3) return;
+    if (!file) return;
+    if (images.length >= 3) {
+      alert("Maximum 3 images allowed");
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -42,6 +58,9 @@ const ImageUploadSection: React.FC = () => {
 
   return (
     <div className="p-6 w-full md:w-1/2 text-white border-r border-zinc-400 dark:border-zinc-700">
+    <Button onClick={onClose} className="hover:text-main-color" variant="transparant">
+      <ArrowLeft /> Back
+    </Button>
       <h2 className="text-lg font-semibold mb-4">Upload Images</h2>
 
       <div className="flex flex-col justify-center items-center">
@@ -68,7 +87,7 @@ const ImageUploadSection: React.FC = () => {
               />
               <button
                 onClick={() => removeImage(idx)}
-                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 text-xs"
+                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center"
               >
                 ×
               </button>

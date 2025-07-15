@@ -12,7 +12,6 @@ export class Artwork {
     public isCollectible: boolean = false,
     public artType: string = 'digital',
     public price: number = 0,
-    public soldCopies: number = 0,
     public downloadAccess: boolean = false,
     public isCommentEnabled: boolean = true,
     public createdAt: Date = new Date(),
@@ -31,7 +30,6 @@ export class Artwork {
       input.isCollectible,
       input.artType,
       input.price,
-      0, 
       input.downloadAccess,
       input.isCommentEnabled
     );

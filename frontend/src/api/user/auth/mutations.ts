@@ -1,4 +1,5 @@
 import apiClient from "../../axios";
+import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ export const useLoginMutation = () => {
       apiClient.post("/api/v1/users/login", credentials),
     onSuccess: (data: any) => {
       console.log("data", data)
+      toast.success("Login successful");
 
         const { user, accessToken } = data;
       
@@ -38,7 +40,9 @@ export const useGoogleAuthMutation = () => {
     mutationFn: (credentials: { token: string, email: string, name: string }) =>
       apiClient.post("/api/v1/users/google-auth", credentials),
     onSuccess: (data: any) => {
-        const { user, accessToken } = data;
+        const { user, accessToken, message } = data;
+
+        toast.success(message);
       
       dispatch(setUser({
         user,
@@ -64,6 +68,7 @@ export const useSignupMutation = () => {
     }) => apiClient.post("/api/v1/users/start-register", credentials),
     onSuccess: (data) => {
       console.log("Verification email sended:", data);
+      toast.success("Verification email sended");
     },
     onError: (error) => {
       console.error("Signup failed:", error);
@@ -80,6 +85,8 @@ export const useSignupverificationMutation = () => {
       apiClient.post("/api/v1/users/register", credentials),
     onSuccess: (data: any) => {
         const { user, accessToken } = data;
+
+        toast.success("Verification successful");
       
       dispatch(setUser({
         user,
@@ -101,6 +108,7 @@ export const useForgottPasswordMutation = () => {
       apiClient.post("/api/v1/users/forgot-password", credentials),
     onSuccess: (data) => {
       console.log("Password reset request sent:", data);
+      toast.success("Password reset request sent");
     },
     onError: (error) => {
       console.error("Password reset failed:", error);
@@ -115,6 +123,7 @@ export const useResetPasswordMutation = () => {
       apiClient.patch("/api/v1/users/reset-password", credentials),
     onSuccess: (data) => {
       console.log("Password reset successful:", data);
+      toast.success("Password reset successful");
     },
     onError: (error) => {
       console.error("Password reset failed:", error);
@@ -131,6 +140,7 @@ export const changePasswordMutation = () => {
     }) => apiClient.patch("/api/v1/users/change-password", credentials),
     onSuccess: (data) => {
       console.log("Password changed successful:", data);
+      toast.success("Password changed successful");
     },
     onError: (error) => {
       console.error("Password change failed:", error);
@@ -144,6 +154,7 @@ export const useBecomeArtistMutation = () => {
     mutationFn: (credentials: {  }) => apiClient.post("/api/v1/users/become-artist"),
     onSuccess: (data) => {
       console.log("Artist request sent:", data);
+      toast.success("Artist request sent");
     },
     onError: (error) => {
       console.error("Artist request failed:", error);
@@ -160,9 +171,11 @@ export const useLogoutMutation = () => {
     onSuccess: () => {
       dispatch(logout());
       navigate('/login');
+      toast.success("Logout successful");
     },
     onError: (error) => {
       console.error("Logout failed:", error);
+      toast.error("Logout failed");
     },
   });
 };

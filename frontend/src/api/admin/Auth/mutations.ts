@@ -1,4 +1,5 @@
 import apiClient from "../../axios";
+import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -14,6 +15,7 @@ export const useAdminLoginMutation = () => {
     onSuccess: (data) => {
 
       console.log("Login successful:", data);
+      toast.success("Login successful");
       dispatch(loginSuccess(data));
 
       navigate('/admin/dashboard');
@@ -39,6 +41,7 @@ const dispatch = useDispatch();
   return useMutation({
     mutationFn: () => apiClient.post("/api/v1/admin/logout"),
     onSuccess: () => {
+      toast.success("Logout successful");
       dispatch(adminLogout());
       navigate('/admin-login');
     },

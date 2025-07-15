@@ -4,7 +4,7 @@ import { Artwork } from "../../1-domine/entities/artwork.entity";
 import { IArtworkRepository } from "../../1-domine/repositories/artwork.repository";
 
 export class ArtRepositoryImpl implements IArtworkRepository {
- private get collection() {
+  private get collection() {
     // The ! tells TypeScript we know it won't be undefined at runtime
     return mongoose.connection.db!.collection<Artwork>("artworks");
   }
@@ -20,7 +20,6 @@ export class ArtRepositoryImpl implements IArtworkRepository {
       isCollectible: artwork.isCollectible,
       artType: artwork.artType,
       price: artwork.price,
-      soldCopies: artwork.soldCopies,
       downloadAccess: artwork.downloadAccess,
       isCommentEnabled: artwork.isCommentEnabled,
       createdAt: artwork.createdAt,
@@ -29,13 +28,25 @@ export class ArtRepositoryImpl implements IArtworkRepository {
     return artwork;
   }
 
-async findById(id: string): Promise<Artwork | null> {
-  try {
-    const objectId = new ObjectId(id);
-    const result = await this.collection.findOne({ _id: objectId });
-    return result as Artwork | null; 
-  } catch (error) {
-    return null;
+  async findById(id: string): Promise<Artwork | null> {
+    try {
+      const objectId = new ObjectId(id);
+      const result = await this.collection.findOne({ _id: objectId });
+      return result as Artwork | null;
+    } catch (error) {
+      return null;
+    }
   }
-}  
+
+  async fetchRecent(lastId?: string): Promise<Artwork[]> {
+    const query: any = lastId ? { _id: { $lt: new ObjectId(lastId) } } : {};
+
+    const results = await this.collection
+      .find(query)
+      .sort({ _id: -1 })
+      .limit(10)
+      .toArray();
+
+    return results as Artwork[];
+  }
 }

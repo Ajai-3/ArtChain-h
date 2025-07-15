@@ -1,4 +1,4 @@
-import { UnauthorizedError } from "../../errors";
+import { ConflictError } from "../../errors";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import { IUserRepository } from "../../1-domine/repositories/IUserRepositories";
 
@@ -9,14 +9,14 @@ export class StartRegisterUseCase {
     const normalizedEmail = email.toLocaleLowerCase();
     const existingUser = await this.userRepo.findOneByEmail(normalizedEmail);
     if (existingUser) {
-      throw new UnauthorizedError(ERROR_MESSAGES.DUPLICATE_EMAIL);
+      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_EMAIL);
     }
     const normalizedUsername = username.toLocaleLowerCase();
     const existingUserByUsername = await this.userRepo.findOneByUsername(
       normalizedUsername
     );
     if (existingUserByUsername) {
-      throw new UnauthorizedError(ERROR_MESSAGES.DUPLICATE_USERNAME);
+      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_USERNAME);
     }
     return {
       name,
